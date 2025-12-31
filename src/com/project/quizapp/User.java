@@ -1,14 +1,14 @@
 package com.project.quizapp;
 
 public abstract class User {
-    private final String userId;
+    private int userId;
     private final String userName;
     private final String password;
     private String role;
     private int totalScore;
     private int quizzesTaken;
 
-    public User(String userId, String userName, String password, String role) {
+    public User(int userId, String userName, String password, String role) {
         this.userId = userId;
         this.userName = userName;
         this.password = password;
@@ -17,8 +17,12 @@ public abstract class User {
         this.quizzesTaken = 0;
     }
 
-    public String getUserId() {
+    public int getUserId() {
         return userId;
+    }
+
+    public int setUserId(int id) {
+        return userId = id;
     }
 
     public String getUserName() {
@@ -37,13 +41,22 @@ public abstract class User {
         return totalScore;
     }
 
+    public void setTotalScore(int totalScore) {
+        this.totalScore = totalScore;
+    }
+
     public int getQuizzesTaken() {
         return quizzesTaken;
+    }
+
+    public void setQuizzesTaken(int quizzesTaken) {
+        this.quizzesTaken = quizzesTaken;
     }
 
     public void incrementQuizzesTaken() {
         this.quizzesTaken++;
     }
+
     public void addToTotalScore(int score) {
         this.totalScore += score;
     }

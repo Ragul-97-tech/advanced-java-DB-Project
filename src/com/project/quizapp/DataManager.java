@@ -1,242 +1,574 @@
 package com.project.quizapp;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.sql.*;
 import java.util.ArrayList;
 
 public class DataManager {
-    ArrayList<Category> categories;
-    ArrayList<User> users;
-    DataBaseManager fileManage;
-    QuestionBank entireQuestions;
+    private static final Logger logger = LogManager.getLogger(DataManager.class);
+    private final Connection connection;
 
     public DataManager() {
-        this.categories = new ArrayList<>();
-        this.users = new ArrayList<>();
-        this.fileManage = new DataBaseManager();
-        this.entireQuestions = new QuestionBank();
+        this.connection = DBConnection.getInstance().getConnection();
     }
 
     public void initializeData() {
-        categories = fileManage.loadCategories();
+        logger.info("Initializing application data");
 
-        if (categories.isEmpty())
+        if (!checkAdminExists()) {
+            createDefaultAdmin();
+        }
+        if (getCategoryCount() == 0) {
             initializeDefaultCategories();
-
-        ArrayList<Question> allQuestions = fileManage.loadQuestions();
-
-        if (allQuestions.isEmpty()) {
-            allQuestions = entireQuestions.generateAllQuestions();
-            fileManage.saveQuestions(allQuestions);
         }
+        logger.info("Data initialization completed");
+    }
 
-        for (Question q : allQuestions) {
-            Category cat = findCategoryById(q.getCategory());
-            if (cat != null)
-                cat.addQuestion(q);
+    private int getCategoryCount() {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.NO_OF_CATEGORIES);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next())
+                return rs.getInt(1);
+        } catch (SQLException e) {
+            logger.error("Error on getting category count", e);
         }
+        return 0;
+    }
 
-        users = fileManage.loadUsers();
-        if (users.isEmpty()) {
-            // creating default admin
-            AdminUser admin = new AdminUser("ADMIN001", "admin", "admin@123", "SUPER");
-            users.add(admin);
-            fileManage.saveUsers(users);
+    private void createDefaultAdmin() {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.INSERT_USER);
+            stmt.setString(1, "Ragul");
+            stmt.setString(2, "Ragul@123");
+            stmt.setString(3, "ADMIN");
+            stmt.executeQuery();
+            logger.info("Default admin user created");
+        } catch (SQLException e) {
+            logger.error("Error creating default admin", e);
         }
+    }
 
-        for (User user : users) {
-            if (user instanceof RegisteredUser regUser) {
-                ArrayList<QuizAttempt> history = fileManage.loadQuizHistory(user.getUserId());
-                for (QuizAttempt attempt : history) {
-                    regUser.addQuizAttempt(attempt);
-                }
+    private boolean checkAdminExists() {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.NO_OF_ADMINS);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next())
+                return rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            logger.error("Error checking admin existence", e);
+        }
+        return false;
+    }
 
-                ArrayList<Question> failedQuestions = fileManage.loadFailedQuestions(user.getUserId());
-                for (Question q : failedQuestions) {
-                    regUser.addFailedQuestion(q);
-                }
+    private void initializeDefaultCategories() {
+        String[][] categories = {
+            {"Java Programming", "Core Java concepts and OOPs"},
+            {"Biology", "Life sciences and human body"},
+            {"English Grammar", "Grammar rules and vocabulary"},
+            {"JavaScript", "JS concept and client side data side management"},
+            {"Python", "Python programming fundamentals"},
+            {"Mathematics", "Algebra, geometry, and calculations"},
+            {"History", "World history and historical events"},
+            {"Science", "Physics, chemistry, and general science"},
+            {"Geography", "World geography and locations"}
+        };
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.INSERT_CATEGORY);
+            for (String[] cat : categories) {
+                stmt.setString(1, cat[0]);
+                stmt.setString(2, cat[1]);
+                stmt.executeQuery();
             }
+            logger.info("Default categories initialized");
+        } catch (SQLException e) {
+            logger.error("Error on initializing categories",e);
         }
-    }
-
-    void initializeDefaultCategories() {
-        categories.add(new Category("CAT001", "Java Programming", "Core Java concepts and OOPs"));
-        categories.add(new Category("CAT002", "Biology", "Life sciences and human body"));
-        categories.add(new Category("CAT003", "English Grammar", "Grammar rules and vocabulary"));
-        categories.add(new Category("CAT004", "JavaScript", "JS concept and client side data side management"));
-        categories.add(new Category("CAT005", "Python", "Python programming fundamentals"));
-        categories.add(new Category("CAT006", "Mathematics", "Algebra, geometry, and calculations"));
-        categories.add(new Category("CAT007", "History", "World history and historical events"));
-        categories.add(new Category("CAT008", "Science", "Physics, chemistry, and general science"));
-        categories.add(new Category("CAT009", "Geography", "World geography and locations"));
-        fileManage.saveCategories(categories);
-    }
-
-    public ArrayList<Category> getCategories() {
-        return categories;
-    }
-
-    public ArrayList<User> getUsers() {
-        return users;
-    }
-
-    public Category findCategoryById(String categoryId) {
-        for (Category cat : categories) {
-            if (cat.getCategoryId().equals(categoryId))
-                return cat;
-        }
-        return null;
-    }
-
-    public Category findCategoryByName(String name) {
-        for (Category cat : categories) {
-            if (cat.getCategoryName().equalsIgnoreCase(name))
-                return cat;
-        }
-        return null;
     }
 
     public User findUserByUsername(String username) {
-        for (User user : users) {
-            if (user.getUserName().equalsIgnoreCase(username))
-                return user;
+       try {
+           PreparedStatement stmt = connection.prepareStatement(DBQueries.GET_USER_BY_NAME);
+           stmt.setString(1, username);
+           ResultSet rs = stmt.executeQuery();
+           if (rs.next())
+               return createUserFromResultSet(rs);
+       } catch (SQLException e) {
+           logger.error("Error on finding user by username: " + username, e);
+       }
+       return null;
+    }
+
+    public User findUserByUserId(int userId) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.GET_USER_BY_ID);
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next())
+                return createUserFromResultSet(rs);
+        } catch (SQLException e) {
+            logger.error("Error on finding user by ID: {}", userId, e);
         }
         return null;
     }
 
-    public User findUserByUserId(String userId) {
-        for (User user : users) {
-            if (user.getUserId().equals(userId))
-                return user;
+    private User createUserFromResultSet(ResultSet rs) throws SQLException {
+        int userId = rs.getInt("userId");
+        String username = rs.getString("username");
+        String password = rs.getString("password");
+        AccessLevel accessLevel = AccessLevel.valueOf(rs.getString("accessLevel"));
+        int score = rs.getInt("score");
+        int attempts = rs.getInt("quizAttempts");
+
+        User user = switch (accessLevel) {
+            case ADMIN -> new AdminUser(userId, username, password, "SUPER");
+            case USER -> new RegisteredUser(userId, username, password);
+            case GUEST -> new GuestUser(userId);
+        };
+
+        user.setTotalScore(score);
+        user.setQuizzesTaken(attempts);
+        return user;
+    }
+
+    public boolean addUser(User user) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.INSERT_USER, Statement.RETURN_GENERATED_KEYS);
+            stmt.setString(1, user.getUserName());
+            stmt.setString(1, user.getPassword());
+            stmt.setString(1, user.getRole());
+
+            int affected = stmt.executeUpdate();
+            if (affected > 0) {
+                ResultSet keys = stmt.getGeneratedKeys();
+                if (keys.next()) {
+                    user.setUserId(keys.getInt(1));
+                }
+                logger.info("User added: " + user.getUserName());
+                return true;
+            }
+        } catch (SQLException e) {
+            logger.error("Error on adding user: " + user.getUserName());
+        }
+        return false;
+    }
+
+    public void updateUserScore(int userId, int scoreToAdd) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.UPDATE_USER_SCORE);
+            stmt.setInt(1, scoreToAdd);
+            stmt.setInt(2, userId);
+            stmt.executeQuery();
+            logger.info("User score update for userId: " + userId);
+        } catch (SQLException e) {
+            logger.error("Error on updating user score",e);
+        }
+    }
+
+    public void promoteToAdmin(int userId) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.PROMOTE_USER_TO_ADMIN);
+            stmt.setInt(1, userId);
+            stmt.executeQuery();
+            logger.info("User promoted to admin: {}", userId);
+        } catch (SQLException e) {
+            logger.error("Error on promoting user to admin",e);
+        }
+    }
+
+    public ArrayList<User> getAllUsers(User user) {
+        ArrayList<User> users = new ArrayList<>();
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.GET_ALL_USERS, Statement.RETURN_GENERATED_KEYS);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                users.add(createUserFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            logger.error("Error getting all users",e);
+        }
+        return users;
+    }
+
+    public ArrayList<Category> getCategories() {
+        ArrayList<Category> categories = new ArrayList<>();
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.GET_ALL_CATEGORIES);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                categories.add(new Category(rs.getInt("categoryId"), rs.getString("categoryName"), rs.getString("categoryDescription")));
+            }
+        } catch (SQLException e) {
+            logger.error("Error on getting categories",e);
+        }
+        return categories;
+    }
+
+    public Category findCategoryByName(String name) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.GET_USER_BY_NAME);
+            stmt.setString(1, name);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next())
+                return new Category(rs.getInt("categoryId"), rs.getString("categoryName"), rs.getString("categoryDescription"));
+        } catch (SQLException e) {
+            logger.error("Error on finding category by category name: {}", name, e);
         }
         return null;
     }
 
-    public void addUser(User u) {
-        users.add(u);
-        fileManage.saveUsers(users);
-    }
-
-    public void updateUser() {
-        fileManage.saveUsers(users);
-        for (User u : users) {
-            if (u instanceof RegisteredUser regUser) {
-                fileManage.saveFailedQuestions(regUser.getFailedQuestion(), u.getUserId());
+    public Category findCategoryById(int categoryId) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.GET_CATEGORY_BY_ID);
+            stmt.setInt(1, categoryId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new Category(rs.getInt("categoryId"), rs.getString("categoryName"), rs.getString("categoryDescription"));
             }
+        } catch (SQLException e) {
+            logger.error("Error on finding category by ID: {}", categoryId, e);
+        }
+        return null;
+    }
+
+    public boolean addCategory(String name, String description) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.INSERT_CATEGORY);
+            stmt.setString(1, name);
+            stmt.setString(2, description);
+            stmt.executeQuery();
+            logger.info("Category added: " + name);
+            return true;
+        } catch (SQLException e) {
+            logger.error("Error on adding new category",e);
+            return false;
         }
     }
 
-    public void updateCategory() {
-        fileManage.saveCategories(categories);
+    public void updateCategory(int categoryId, String name, String description) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.UPDATE_CATEGORY);
+            stmt.setString(1, name);
+            stmt.setString(2, description);
+            stmt.setInt(3, categoryId);
+            stmt.executeUpdate();
+            logger.info("Category updated: " + categoryId);
+        } catch (SQLException e) {
+            logger.error("Error on updating category",e);
+        }
     }
 
-    public void promoteToAdmin(User user) {
-        if (user instanceof RegisteredUser) {
-            users.remove(user);
-            AdminUser newAdmin = new AdminUser(user.getUserId(), user.getUserName(), user.getPassword(), "PROMOTED");
-            newAdmin.addToTotalScore(user.getTotalScore());
-            for (int i = 0; i < user.getQuizzesTaken(); i++) {
-                newAdmin.incrementQuizzesTaken();
+    public void removeCategory(int categoryId) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.DELETE_CATEGORY);
+            stmt.setInt(1, categoryId);
+            stmt.executeUpdate();
+            logger.info("Category deleted: " + categoryId);
+        } catch (SQLException e) {
+            logger.error("Error on deleting category", e);
+        }
+    }
+
+    public int getCategoryQuestionCount(int categoryId) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.COUNT_QUESTIONS_IN_CATEGORY);
+            stmt.setInt(1, categoryId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
             }
-            users.add(newAdmin);
-            fileManage.saveUsers(users);
+        } catch (SQLException e) {
+            logger.error("Error on counting category questions",e);
         }
+        return 0;
     }
 
-    public void addCategory(Category cat) {
-        categories.add(cat);
-        fileManage.saveCategories(categories);
-    }
+    public ArrayList<Question> getQuestionsByCategory(int categoryId) {
+        ArrayList<Question> questions = new ArrayList<>();
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.GET_QUESTIONS_BY_CATEGORY);
+            stmt.setInt(1, categoryId);
+            ResultSet rs = stmt.executeQuery();
 
-    public void removeCategory(String categoryId) {
-        Category cat = findCategoryById(categoryId);
-        if (cat != null) {
-            categories.remove(cat);
-            fileManage.saveCategories(categories);
-            saveAllQuestions();
-        }
-    }
-
-    public void addQuestion(Question q) {
-        Category cat = findCategoryById(q.getCategory());
-        if (cat != null) {
-            cat.addQuestion(q);
-            saveAllQuestions();
-        }
-    }
-
-    public void removeQuestions(String categoryId, String questionId) {
-        Category cat = findCategoryById(categoryId);
-        if (cat != null) {
-            cat.removeQuestion(questionId);
-            saveAllQuestions();
-        }
-    }
-
-    public void moveQuestion(String questionId, String fromCategoryId, String toCategoryId) {
-        Category fromCat = findCategoryById(fromCategoryId);
-        Category toCat = findCategoryById(toCategoryId);
-
-        if (fromCat != null && toCat != null) {
-            Question quest = null;
-            for (Question q : fromCat.getQuestions()) {
-                if (q.getQuestionId().equals(questionId)) {
-                    quest = q;
-                    break;
+            while (rs.next()) {
+                Question q = createQuestionFromResultSet(rs);
+                if (q != null) {
+                    questions.add(q);
                 }
             }
+        } catch (SQLException e) {
+            logger.error("Error on getting questions by category",e);
+        }
+        return questions;
+    }
 
-            if (quest != null) {
-                fromCat.removeQuestion(questionId);
-                quest.setCategory(toCategoryId);
-                toCat.addQuestion(quest);
-                saveAllQuestions();
+    public ArrayList<Question> getQuestionByDifficulty(int categoryId, String difficulty) {
+        ArrayList<Question> questions = new ArrayList<>();
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.GET_QUESTIONS_BY_DIFFICULTY);
+            stmt.setInt(1, categoryId);
+            stmt.setString(2, difficulty);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Question q = createQuestionFromResultSet(rs);
+                if (q != null) {
+                    questions.add(q);
+                }
             }
+        } catch (SQLException e) {
+            logger.error("Error on getting questions by difficulty",e);
+        }
+        return questions;
+    }
+
+    public Question getQuestionById(int questionId) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.GET_QUESTION_BY_ID);
+            stmt.setInt(1, questionId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return createQuestionFromResultSet(rs);
+            }
+        } catch (SQLException e) {
+            logger.error("Error on getting question by ID",e);
+        }
+        return null;
+    }
+
+    private Question createQuestionFromResultSet(ResultSet rs) throws SQLException {
+        int questionId = rs.getInt("questionId");
+        String questionText = rs.getString("questionText");
+        String difficulty = rs.getString("difficulty");
+        int points = rs.getInt("points");
+        int categoryId = rs.getInt("categoryId");
+
+        String[] options = getOptionsForQuestion(questionId);
+        int correctOption = getCorrectOptionIndex(questionId);
+
+        if (options != null && correctOption != -1) {
+            return new Question(questionId, questionText, options, correctOption, categoryId, difficulty, points);
+        }
+        return null;
+    }
+
+    private String[] getOptionsForQuestion(int questionId) {
+        ArrayList<String> optionsList = new ArrayList<>();
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.GET_OPTIONS_BY_QUESTION);
+            stmt.setInt(1, questionId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                optionsList.add(rs.getString("optionText"));
+            }
+            optionsList.trimToSize();
+            return optionsList.toArray(new String[0]);
+        } catch (SQLException e) {
+            logger.error("Error on getting options for question");
+        }
+        return null;
+    }
+
+    private int getCorrectOptionIndex(int questionId) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.GET_OPTIONS_BY_QUESTION);
+            stmt.setInt(1, questionId);
+            ResultSet rs = stmt.executeQuery();
+
+            int index = 0;
+            while (rs.next()) {
+                if (rs.getBoolean("isCorrect")) {
+                    return index;
+                }
+                index++;
+            }
+        } catch (SQLException e) {
+            logger.error("Error on getting correct option index",e);
+        }
+        return -1;
+    }
+
+    public int addQuestion(int categoryId, String questionText, String difficulty, int points, String[] options, int correctOption) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.INSERT_QUESTION);
+            stmt.setInt(1, categoryId);
+            stmt.setString(2, questionText);
+            stmt.setString(3, difficulty);
+            stmt.setInt(4, points);
+            stmt.executeUpdate();
+            ResultSet keys = stmt.getGeneratedKeys();
+
+            if (keys.next()) {
+                int questionId = keys.getInt(1);
+                addOptionsForQuestion(questionId, options, correctOption);
+                logger.info("Question added with ID: " + questionId);
+                return questionId;
+            }
+        } catch (SQLException e) {
+            logger.error("Error on adding question",e);
+        }
+        return -1;
+    }
+
+    private void addOptionsForQuestion(int questionId, String[] options, int correctOption) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.INSERT_OPTION);
+            for (int i = 0; i < options.length; i++) {
+                stmt.setInt(1, questionId);
+                stmt.setString(2, options[i]);
+                stmt.setBoolean(3, i == correctOption);
+                stmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            logger.error("Error on adding options",e);
         }
     }
 
-    public void saveAllQuestions() {
-        ArrayList<Question> allQuestions = new ArrayList<>();
-        for (Category category : categories) {
-            allQuestions.addAll(category.getQuestions());
+    public void updateQuestion(int questionId, String questionText, String difficulty, int points) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.UPDATE_QUESTION);
+            stmt.setString(1, questionText);
+            stmt.setString(2, difficulty);
+            stmt.setInt(3, points);
+            stmt.setInt(4, questionId);
+            stmt.executeUpdate();
+            logger.info("Question updated: " + questionId);
+        } catch (SQLException e) {
+            logger.error("Error on updating question",e);
         }
-        fileManage.saveQuestions(allQuestions);
+    }
+
+    public void updateQuestionCategory(int questionId, int newCategoryId) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.UPDATE_QUESTION_CATEGORY);
+            stmt.setInt(1, newCategoryId);
+            stmt.setInt(2, questionId);
+            stmt.executeUpdate();
+            logger.info("Question category updated: " + questionId);
+        } catch (SQLException e) {
+            logger.error("Error on updating question category", e);
+        }
+    }
+
+    public void removeQuestions(int questionId) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.DELETE_QUESTION);
+            stmt.setInt(1, questionId);
+            stmt.executeUpdate();
+            logger.info("Question deleted: " + questionId);
+        } catch (SQLException e) {
+            logger.error("Error on deleting question",e);
+        }
     }
 
     public int getTotalQuestionsCount() {
-        int count = 0;
-        for (Category cat : categories) {
-            count += cat.getTotalQuestions();
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.COUNT_TOTAL_QUESTIONS);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            logger.error("Error on counting total questions",e);
         }
-        return count;
+        return 0;
     }
 
-    public String generateNextCategoryId() {
-        int maxId = 0;
-        for (Category cat : categories) {
-            String id = cat.getCategoryId().replace("CAT", "");
-            try {
-                int num = Integer.parseInt(id);
-                maxId = Math.max(maxId, num);
-            } catch (NumberFormatException e) {
-                // Skips invalid ids
-            }
+    public void addFailedQuestion(int userId, int questionId) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.INSERT_FAILED_QUESTION);
+            stmt.setInt(1, userId);
+            stmt.setInt(2, questionId);
+            stmt.executeUpdate();
+            logger.info("Failed question added for user: " + userId);
+        } catch (SQLException e) {
+            logger.error("Error on adding failed question",e);
         }
-        return String.format("CAT%03d", maxId+1);
     }
 
-    public String generateNextQuestionId(String categoryId) {
-        Category cat = findCategoryById(categoryId);
-        if (cat == null) return categoryId + "_Q001";
+    public ArrayList<Question> getFailedQuestions(int userId) {
+        ArrayList<Question> failedQuestions = new ArrayList<>();
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.GET_FAILED_QUESTIONS_BY_USER);
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
 
-        int maxId = 0;
-        for (Question q : cat.getQuestions()) {
-            String id = q.getQuestionId().replace(categoryId + "_Q", "");
-            try {
-                int num = Integer.parseInt(id);
-                maxId = Math.max(maxId, num);
-            } catch (NumberFormatException e) {
-                // Skips invalid ids
+            while (rs.next()) {
+                Question q = createQuestionFromResultSet(rs);
+                if (q != null) {
+                    failedQuestions.add(q);
+                }
             }
+        } catch (SQLException e) {
+            logger.error("Error on getting failed question",e);
         }
-        return String.format("%s_Q%03d", categoryId, maxId+1);
+        return failedQuestions;
+    }
+
+    public void clearFailedQuestions(int userId) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.DELETE_ALL_FAILED_QUESTIONS);
+            stmt.setInt(1, userId);
+            stmt.executeUpdate();
+            logger.info("Failed questions cleared for user: " + userId);
+        } catch (SQLException e) {
+            logger.error("Error on clearing failed questions",e);
+        }
+    }
+
+    public int getFailedQuestionsCount(int userId) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.COUNT_FAILED_QUESTIONS);
+
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            logger.error("Error on counting failed questions", e);
+        }
+        return 0;
+    }
+
+    public void addQuizHistory(int userId, String gameMode, int totalScore, int earnedScore) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.INSERT_HISTORY);
+            stmt.setInt(1, userId);
+            stmt.setString(2, gameMode);
+            stmt.setInt(3, totalScore);
+            stmt.setInt(4, earnedScore);
+            stmt.executeUpdate();
+            logger.info("Quiz history added for user: " + userId);
+        } catch (SQLException e) {
+            logger.error("Error on adding quiz history",e);
+        }
+    }
+
+    public ArrayList<QuizAttempt> getQuizHistory(int userId, int limit) {
+        ArrayList<QuizAttempt> history = new ArrayList<>();
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.GET_HISTORY_BY_USER);
+            stmt.setInt(1, userId);
+            stmt.setInt(2, limit);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                int attemptId = rs.getInt("historyId");
+                String mode = rs.getString("gameMode");
+                int totalScore = rs.getInt("totalScore");
+                int earnedScore = rs.getInt("earnedScore");
+                String date = rs.getString("quizDate");
+
+                QuizAttempt attempt = new QuizAttempt(attemptId, "", mode, earnedScore, totalScore, "", mode, date);
+            }
+        } catch (SQLException e) {
+            logger.error("Error on getting quiz history",e);
+        }
+        return history;
     }
 }

@@ -3,7 +3,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class QuizAttempt {
-    String attemptId;
+    int attemptId;
     String quizId;
     String quizTitle;
     int score;
@@ -13,7 +13,7 @@ public class QuizAttempt {
     String mode;
     DateTimeFormatter formatter;
 
-    public QuizAttempt(String attemptId, String quizId, String quizTitle, int score, int totalQuestionsMarks, String category, String mode) {
+    public QuizAttempt(int attemptId, String quizId, String quizTitle, int score, int totalQuestionsMarks, String category, String mode) {
         this.attemptId = attemptId;
         this.quizId = quizId;
         this.quizTitle = quizTitle;
@@ -25,7 +25,7 @@ public class QuizAttempt {
         this.timestamp = LocalDateTime.now().format(formatter);
     }
 
-    public QuizAttempt(String attemptId, String quizId, String quizTitle, int score, int totalQuestionsMarks, String category, String mode, String timestamp) {
+    public QuizAttempt(int attemptId, String quizId, String quizTitle, int score, int totalQuestionsMarks, String category, String mode, String timestamp) {
         this.attemptId = attemptId;
         this.quizId = quizId;
         this.quizTitle = quizTitle;

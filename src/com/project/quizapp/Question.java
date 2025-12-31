@@ -1,7 +1,7 @@
 package com.project.quizapp;
 
 public class Question {
-    private String questionId;
+    private int questionId;
     private String questionText;
     private String[] options;
     private int correctOption;
@@ -9,7 +9,7 @@ public class Question {
     private String difficulty;
     private int points;
 
-    public Question(String questionId, String questionText, String[] options, int correctOption, String category, String difficulty, int points) {
+    public Question(int questionId, String questionText, String[] options, int correctOption, int category, String difficulty, int points) {
         this.questionId = questionId;
         this.questionText = questionText;
         this.options = options;
@@ -19,7 +19,7 @@ public class Question {
         this.points = points;
     }
 
-    public String getQuestionId() {
+    public int getQuestionId() {
         return questionId;
     }
     public String getQuestionText() {

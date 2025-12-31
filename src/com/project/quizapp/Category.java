@@ -3,19 +3,19 @@ package com.project.quizapp;
 import java.util.ArrayList;
 
 public class Category {
-    private final String categoryId;
+    private final int categoryId;
     private String categoryName;
     private String description;
     private final ArrayList<Question> questions;
 
-    public Category(String categoryId, String categoryName, String description) {
+    public Category(int categoryId, String categoryName, String description) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
         this.description = description;
         this.questions = new ArrayList<>();
     }
 
-    public String getCategoryId() {
+    public int getCategoryId() {
         return categoryId;
     }
 
