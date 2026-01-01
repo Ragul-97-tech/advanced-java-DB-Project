@@ -3,7 +3,7 @@ package com.project.quizapp;
 import java.util.ArrayList;
 
 public class MarathonMode extends QuizMode {
-    QuizApplication quizApp;
+    private QuizApplication quizApp;
     private static final int ENERGY_START = 100;
     private static final int ENERGY_LOSS_WRONG = 15;
     private static final int ENERGY_GAIN_CORRECT = 5;
@@ -24,7 +24,7 @@ public class MarathonMode extends QuizMode {
             totalPoints += q.getPoints();
         }
 
-        ArrayList<Question> failed = new ArrayList<>();
+        ArrayList<Integer> failedQuestionIds = new ArrayList<>();
         int energy = ENERGY_START;
         int questionsAnswered = 0;
 
@@ -53,7 +53,7 @@ public class MarathonMode extends QuizMode {
 
             if (answer == 0) {
                 System.out.println(ColorCode.colored("yellow", "\n⚠ Quiz exited!"));
-                return new QuizResult(score, totalPoints, questionsAnswered, failed.size());
+                return new QuizResult(score, totalPoints, questionsAnswered, failedQuestionIds.size());
             }
 
             if (answer - 1 == q.getCorrectOption()) {
@@ -62,7 +62,7 @@ public class MarathonMode extends QuizMode {
                 score += q.getPoints();
             } else {
                 energy -= ENERGY_LOSS_WRONG;
-                failed.add(q);
+                failedQuestionIds.add(Integer.parseInt(q.getQuestionId()));
                 System.out.println(ColorCode.error("Wrong! Correct: " + options[q.getCorrectOption()] + " | ⚡ -" + ENERGY_LOSS_WRONG + " energy"));
 
                 if (energy <= 0) {
@@ -72,13 +72,15 @@ public class MarathonMode extends QuizMode {
             }
         }
 
-        if (user instanceof RegisteredUser regUser) {
-            for (Question q : failed) {
-                regUser.addFailedQuestion(q);
+        if (user.canSaveProgress()) {
+            int userId = Integer.parseInt(user.getUserId());
+            DataManager dm = new DataManager();
+            for (Integer questionId : failedQuestionIds) {
+                dm.addFailedQuestion(userId, questionId);
             }
         }
 
-        return new QuizResult(score, totalPoints, questionsAnswered, failed.size());
+        return new QuizResult(score, totalPoints, questionsAnswered, failedQuestionIds.size());
     }
 
     private String getEnergyBar(int energy) {

@@ -1,12 +1,16 @@
 package com.project.quizapp;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class AuthenticationManager {
+    private static final Logger logger = LogManager.getLogger(AuthenticationManager.class);
     DataManager metaData;
     User currentUser;
     QuizApplication quizApp;
 
     public AuthenticationManager(DataManager dataManager) {
-        metaData = dataManager;
+        this.metaData = dataManager;
         this.currentUser = null;
         this.quizApp = new QuizApplication();
     }
@@ -32,18 +36,26 @@ public class AuthenticationManager {
                 System.out.println(ColorCode.colored("cyan", ColorCode.boxSingle("       LOGIN       ")));
                 System.out.println(ColorCode.colored("red", "0. Cancel"));
                 username = quizApp.getString(ColorCode.colored("cyan", "\nEnter username: "));
-                if (username.trim().equals("0")) return false;
+                if (username.trim().equals("0")) {
+                    logger.info("Login cancelled");
+                    return authMenu();
+                }
                 password = quizApp.getString(ColorCode.colored("cyan", "Enter password: "));
-                if (password.trim().equals("0")) return false;
+                if (password.trim().equals("0")) {
+                    logger.info("Login cancelled");
+                    return authMenu();
+                }
 
                 User u = metaData.findUserByUsername(username);
 
                 if (login(password, u)) {
                     System.out.println(ColorCode.right("Login Successfully! welcome, " + username));
+                    logger.info("User logged in: " + username);
                     return true;
                 }
                 else {
                     System.out.println(ColorCode.error("Invalid credentials!"));
+                    logger.warn("Failed login attempt for username: " + username);
                     return false;
                 }
 
@@ -51,10 +63,14 @@ public class AuthenticationManager {
                 System.out.println(ColorCode.colored("cyan", ColorCode.boxSingle("    REGISTRATION    ")));
                 System.out.println(ColorCode.colored("red", "0. Cancel"));
                 username = quizApp.getString(ColorCode.colored("cyan", "\nEnter username: "));
-                if (username.trim().equals("0")) return false;
+                if (username.trim().equals("0")) {
+                    logger.info("Registration cancelled");
+                    return authMenu();
+                }
 
                 if (username.length() < 3) {
                     System.out.println(ColorCode.error("Username must be at least 3 characters!"));
+                    logger.warn("Registration failed: username too short");
                     return false;
                 }
 
@@ -62,17 +78,20 @@ public class AuthenticationManager {
                     password = quizApp.getString(ColorCode.colored("cyan", "Enter password: "));
                     if (password.length() < 4) {
                         System.out.println(ColorCode.error("Password must be at least 4 characters!"));
+                        logger.warn("Registration failed: password too short");
                         return false;
                     }
-                    String userId = "USER" + String.format("%03d", metaData.getUsers().size() + 1);
-                    RegisteredUser newUser = new RegisteredUser(userId, username, password);
-                    metaData.addUser(newUser);
-                    currentUser = newUser;
-                    System.out.println(ColorCode.right("Registration successfully! Welcome, " + username));
-                    return true;
+                    RegisteredUser newUser = new RegisteredUser("", username, password);
+                    if (metaData.addUser(newUser)) {
+                        currentUser = newUser;
+                        System.out.println(ColorCode.right("Registration successfully! Welcome, " + username));
+                        logger.info("New user registered: " + username);
+                        return true;
+                    }
                 }
                 else {
                     System.out.println(ColorCode.error("Username already exist!"));
+                    logger.warn("Registration failed: username already exists - " + username);
                     return false;
                 }
 
@@ -81,9 +100,11 @@ public class AuthenticationManager {
                 currentUser = new GuestUser(guestId);
                 System.out.println(ColorCode.right("Continuing as Guest"));
                 System.out.println(ColorCode.warning("Note: Progress will not be saved!"));
+                logger.info("Guest user started session");
                 return true;
 
             case 0:
+                logger.info("User exited authentication");
                 return false;
 
             default:
@@ -103,6 +124,7 @@ public class AuthenticationManager {
     public void logout() {
         if (currentUser != null) {
             System.out.println(ColorCode.colored("yellow", "\n\uD83D\uDC4B Goodbye, " + currentUser.getUserName() + "!"));
+            logger.info("User logged out: " + currentUser.getUserName());
             currentUser = null;
         }
     }

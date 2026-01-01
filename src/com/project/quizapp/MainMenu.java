@@ -1,6 +1,10 @@
 package com.project.quizapp;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class MainMenu {
+    private static final Logger logger = LogManager.getLogger(MainMenu.class);
     DataManager metaData;
     AuthenticationManager auth;
     public MainMenu(AuthenticationManager auth, DataManager metaData) {
@@ -9,11 +13,11 @@ public class MainMenu {
     }
 
     public void start() {
-        boolean running = true;
+        logger.info("Main menu started");
         while (true) {
             if (auth.isNotAuthenticated()) {
                 if (!auth.authMenu()) {
-                    running = false;
+                    logger.info("User chose to exit application");
                     break;
                 }
             }
@@ -21,10 +25,14 @@ public class MainMenu {
 
             if (currentUser == null) continue;
             ColorCode.clearScreen();
-            if (currentUser.canAccessAdminFeature())
+            if (currentUser.canAccessAdminFeature()) {
+                logger.info("Admin panel accessed by: " + currentUser.getUserName());
                 new AdminPanel(metaData, auth).showMenu();
-            else
+            }
+            else {
+                logger.info("User menu accessed by: " + currentUser.getUserName());
                 new UserMenu(metaData, auth).show();
+            }
 
             if (auth.isNotAuthenticated()) {
                 continue;

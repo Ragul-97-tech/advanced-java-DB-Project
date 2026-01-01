@@ -7,7 +7,7 @@ public class RegisteredUser extends User{
     int maxFailedQuestions;
     ArrayList<QuizAttempt> quizHistory;
 
-    public RegisteredUser(int userId, String userName, String password) {
+    public RegisteredUser(String userId, String userName, String password) {
         super(userId, userName, password, "USER");
         this.failedQuestion = new ArrayList<>();
         this.quizHistory = new ArrayList<>();

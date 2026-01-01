@@ -1,11 +1,15 @@
 package com.project.quizapp;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 
 public class UserMenu {
-    DataManager metaData;
-    AuthenticationManager auth;
-    QuizApplication quizApp;
+    private static final Logger logger = LogManager.getLogger(UserMenu.class);
+    private DataManager metaData;
+    private AuthenticationManager auth;
+    private QuizApplication quizApp;
 
     public UserMenu(DataManager metaData, AuthenticationManager auth) {
         this.metaData = metaData;
@@ -74,31 +78,38 @@ public class UserMenu {
         QuizMode mode = selectMode();
         if (mode == null) return;
 
+        int categoryId = Integer.parseInt(selectedCategory.getCategoryId());
         ArrayList<Question> filteredQuestions;
+
         if (difficulty.equals("ALL"))
-            filteredQuestions = selectedCategory.getQuestions();
+            filteredQuestions = metaData.getQuestionsByCategory(categoryId);
         else
-            filteredQuestions = selectedCategory.getQuestionsByDifficulty(difficulty);
+            filteredQuestions = metaData.getQuestionByDifficulty(categoryId, difficulty);
+
         if (filteredQuestions.isEmpty()) {
             System.out.println(ColorCode.error("No questions available for this difficulty"));
+            logger.warn("No questions found for category: " + categoryId + ", difficulty: " + difficulty);
             return;
         }
 
         String quizId = "QUIZ_" + System.currentTimeMillis();
         Quiz quiz = new Quiz(quizId, selectedCategory.getCategoryName() + " Quiz", selectedCategory.getCategoryId(), filteredQuestions, mode.getModeName(), 0);
-        quiz.shuffleQuestions();
+        logger.info("Starting quiz: " + quiz.getQuizTitle() + " for user: " + u.getUserName());
 
         QuizResult result = mode.executeQuiz(quiz, u);
         displayResult(result, quiz.getQuizTitle());
 
-        if (u instanceof RegisteredUser regUser) {
-            regUser.addToTotalScore(result.getScore());
-            regUser.incrementQuizzesTaken();
+        if (u.canSaveProgress()) {
+            int userId = Integer.parseInt(u.getUserId());
+            metaData.updateUserScore(userId, result.getScore());
+            metaData.addQuizHistory(userId, mode.getModeName(), result.getTotalPoints(), result.getScore());
 
-            String attemptId = "ATT_" + System.currentTimeMillis();
-            QuizAttempt attempt = new QuizAttempt(attemptId, quiz.getQuizId(), quiz.getQuizTitle(), result.getScore(), result.getTotalPoints(), quiz.getCategory(), mode.getModeName());
-            regUser.addQuizAttempt(attempt);
-            metaData.updateUser();
+            // Reload user data
+            User updatedUser = metaData.findUserByUserId(userId);
+            u.setTotalScore(updatedUser.getTotalScore());
+            u.setQuizzesTaken(updatedUser.getQuizzesTaken());
+
+            logger.info("Quiz completed by user: " + u.getUserName() + ", Score: " + result.getScore());
         }
     }
 
@@ -107,7 +118,8 @@ public class UserMenu {
         System.out.println("\n"+ColorCode.colored("cyan", ColorCode.boxDouble("       \uD83D\uDCDA SELECT CATEGORY \uD83D\uDCDA       ")));
         for (int i = 0; i < categories.size(); i++) {
             Category cat = categories.get(i);
-            System.out.println(ColorCode.colored("yellow", (i+1) + ". ") + ColorCode.colored("white", cat.getCategoryName()) + ColorCode.DIM + " (" + cat.getTotalQuestions() + " questions)");
+            int questionCount = metaData.getCategoryQuestionCount(Integer.parseInt(cat.getCategoryId()));
+            System.out.println(ColorCode.colored("yellow", (i+1) + ". ") + ColorCode.colored("white", cat.getCategoryName()) + ColorCode.DIM + " (" + questionCount + " questions)");
             System.out.println("   " + cat.getDescription() + ColorCode.RESET);
         }
         System.out.println(ColorCode.colored("red", "0 to Cancel"));
@@ -173,11 +185,13 @@ public class UserMenu {
     }
 
     void practiceFailedQuestions(User user) {
-        if (!(user instanceof RegisteredUser regUser)) {
+        if (!user.canSaveProgress()) {
             System.out.println(ColorCode.error("This feature is only available for registered users!"));
             return;
         }
-        ArrayList<Question> failedQuestions = regUser.getFailedQuestion();
+
+        int userId = Integer.parseInt(user.getUserId());
+        ArrayList<Question> failedQuestions = metaData.getFailedQuestions(userId);
         if (failedQuestions.isEmpty()) {
             System.out.println(ColorCode.right("Great! You have no failed questions."));
             return;
@@ -192,9 +206,9 @@ public class UserMenu {
         displayResult(result, "Practice Quiz");
         
         if (result.getFailedCount() == 0) {
-            regUser.clearFailedQuestions();
-            metaData.updateUser();
-            System.out.println(ColorCode.GREEN + "\uD83C\uDF89 Congratulations! All practice questions answered correctly!" + ColorCode.RESET);
+            metaData.clearFailedQuestions(userId);
+            System.out.println(ColorCode.GREEN + "🎉 Congratulations! All practice questions answered correctly!" + ColorCode.RESET);
+            logger.info("User cleared all failed questions: " + userId);
         }
     }
 
@@ -204,10 +218,10 @@ public class UserMenu {
         sb.append(ColorCode.YELLOW).append(ColorCode.BOLD).append("\uD83D\uDC64Username        : ").append(ColorCode.GREEN).append(u.getUserName()).append(ColorCode.RESET).append("\n");
         sb.append(ColorCode.YELLOW).append(ColorCode.BOLD).append("\uD83C\uDFAFTotal Score     : ").append(ColorCode.GREEN).append(u.getTotalScore()).append(ColorCode.RESET).append("\n");
         sb.append(ColorCode.YELLOW).append(ColorCode.BOLD).append("\uD83D\uDCDDQuizzes Taken   : ").append(ColorCode.GREEN).append(u.getQuizzesTaken()).append(ColorCode.RESET).append("\n");
-        if (u instanceof  RegisteredUser regUser) {
-            sb.append(ColorCode.MAGENTA).append(ColorCode.BOLD).append("Average Score   : ").append(ColorCode.GREEN).append(String.format("%.2f",regUser.getAverageScore())).append(ColorCode.RESET).append("\n");
-//            sb.append(ColorCode.MAGENTA).append(ColorCode.BOLD).append("Average percent : ").append(ColorCode.GREEN).append(String.format("%.2f",regUser.getAveragePercentage())).append(ColorCode.RESET).append("\n");
-            sb.append(ColorCode.YELLOW).append("Failed Questions: ").append(regUser.getMaxFailedQuestionsCount()).append("\n");
+        if (u.canSaveProgress()) {
+            int userId = Integer.parseInt(u.getUserId());
+            int failedCount = metaData.getFailedQuestionsCount(userId);
+            sb.append(ColorCode.YELLOW).append("❌ Failed Questions: ").append(failedCount).append("\n");
         }
         sb.append(ColorCode.separator(50));
         return sb.toString();
@@ -215,11 +229,13 @@ public class UserMenu {
 
     private String viewQuizHistory(User user) {
         StringBuilder sb = new StringBuilder();
-        if (!(user instanceof RegisteredUser regUser)) {
+        if (!user.canSaveProgress()) {
             sb.append(ColorCode.error("Quiz history is only available for registered users!")).append("\n");
             return sb.toString();
         }
-        ArrayList<QuizAttempt> history = regUser.getQuizHistory();
+
+        int userId = Integer.parseInt(user.getUserId());
+        ArrayList<QuizAttempt> history = metaData.getQuizHistory(userId, 10);
         if (history.isEmpty()) {
             sb.append(ColorCode.YELLOW).append("📜 No quiz history available").append(ColorCode.RESET).append("\n");
             return sb.toString();
@@ -227,22 +243,22 @@ public class UserMenu {
         sb.append("\n").append(ColorCode.colored("cyan", ColorCode.boxDouble("      📜 Quiz History 📜     "))).append("\n");
         sb.append(ColorCode.colored("yellow", "Showing last " + Math.min(10, history.size()) + " attempts")).append("\n");
         sb.append(ColorCode.separator(50));
-        for (int i = history.size() - 1; i >= 0 && i >= history.size() - 10; i--) {
+        for (int i = 0; i < history.size(); i++) {
             QuizAttempt attempt = history.get(i);
-            sb.append(ColorCode.CYAN).append("\n").append(history.size() - i).append(". ").append(ColorCode.BOLD).append(attempt.getQuizTitle());
-            sb.append(" |  Score: ").append(attempt.getScore()).append("/").append(attempt.getTotalQuestionsMarks()).append("(").append(String.format("%.2f", attempt.getPercentage())).append(")");
-            sb.append(" |  Mode : ").append(attempt.getMode()).append(" | Date: ").append(attempt.getTimestamp()).append("\n");
+            sb.append(ColorCode.CYAN).append("\n").append(i + 1).append(". ").append(ColorCode.BOLD).append(attempt.getMode());
+            sb.append(" | Score: ").append(attempt.getScore()).append("/").append(attempt.getTotalQuestionsMarks());
+            sb.append(" (").append(String.format("%.2f", attempt.getPercentage())).append("%)");
+            sb.append(" | Date: ").append(attempt.getTimestamp()).append(ColorCode.RESET).append("\n");
         }
         sb.append(ColorCode.separator(50));
         return sb.toString();
     }
 
     private String viewLeaderboard() {
-
         StringBuilder sb = new StringBuilder();
-        sb.append("\n").append(ColorCode.colored("cyan",ColorCode.boxDouble("             🏆 LEADERBOARD (TOP 10) 🏆            "))).append("\n");
+        sb.append("\n").append(ColorCode.colored("cyan",ColorCode.boxDouble("             🏆 LEADERBOARD (TOP 10) 🏆             "))).append("\n");
 
-        ArrayList<User> users = metaData.getUsers();
+        ArrayList<User> users = metaData.getAllUsers();
         for (int i = 0; i < users.size(); i++) {
             int currentIdx = i;
             if (users.get(currentIdx).getTotalScore() == 0) continue;
@@ -268,6 +284,8 @@ public class UserMenu {
         if (count == 0) {
             sb.append(ColorCode.colored("yellow", "No scores yet. Be the first!")).append("\n");
         }
+
+        sb.append(ColorCode.separator(50));
         return sb.toString();
     }
 
@@ -277,12 +295,15 @@ public class UserMenu {
         ArrayList<Category> categories = metaData.getCategories();
         for (int i = 0; i < categories.size(); i++) {
             Category cat = categories.get(i);
+            int categoryId = Integer.parseInt(cat.getCategoryId());
+            int totalQuestions = metaData.getCategoryQuestionCount(categoryId);
             sb.append(ColorCode.colored("yellow", "\n" + (i+1) + ". " + cat.getCategoryName())).append("\n");
             sb.append("   ").append(ColorCode.DIM).append(cat.getDescription()).append(ColorCode.RESET).append("\n");
-            sb.append("  \uD83D\uDCDD Questions: ").append(cat.getTotalQuestions()).append("\n");
+            sb.append("  \uD83D\uDCDD Questions: ").append(totalQuestions).append("\n");
 
+            ArrayList<Question> questions = metaData.getQuestionsByCategory(categoryId);
             int easy = 0, medium = 0, hard = 0;
-            for (Question q : cat.getQuestions()) {
+            for (Question q : questions) {
                 String diff = q.getDifficulty().toUpperCase();
                 if (diff.equals("EASY")) easy++;
                 else if (diff.equals("MEDIUM")) medium++;

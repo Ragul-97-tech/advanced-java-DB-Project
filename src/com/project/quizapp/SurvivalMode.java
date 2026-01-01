@@ -3,8 +3,8 @@ package com.project.quizapp;
 import java.util.ArrayList;
 
 public class SurvivalMode extends QuizMode {
-    int maxLives;
-    QuizApplication quizApp;
+    private int maxLives;
+    private QuizApplication quizApp;
 
     public SurvivalMode(int maxLives) {
         super("Survival Mode", "Answer until you lose all lives");
@@ -23,7 +23,7 @@ public class SurvivalMode extends QuizMode {
 
         int lives = maxLives;
         int questionsAnswered = 0;
-        ArrayList<Question> failed = new ArrayList<>();
+        ArrayList<Integer> failedQuestionIds = new ArrayList<>();
 
         System.out.println("\n"+ColorCode.colored("red", ColorCode.boxDouble("\uD83D\uDC80 Survival Mode: " + quiz.getQuizTitle())));
         System.out.println(ColorCode.colored("red", "Lives: " + lives));
@@ -51,14 +51,13 @@ public class SurvivalMode extends QuizMode {
                 return new QuizResult(score, totalPoints, questionsAnswered, questions.size() - questionsAnswered);
             }
 
-
             if (answer - 1 == q.getCorrectOption()) {
                 System.out.println(ColorCode.right("Correct! +" +q.getPoints() + " points"));
                 score += q.getPoints();
             }
             else {
                 lives--;
-                failed.add(q);
+                failedQuestionIds.add(Integer.parseInt(q.getQuestionId()));
                 System.out.println(ColorCode.error("Wrong! Lost a life! Correct: ") + ColorCode.colored("green", options[q.getCorrectOption()]));
                 if (lives == 0) {
                     System.out.println(ColorCode.colored("red", "\n\uD83D\uDC80 GAME OVER! No lives remaining"));
@@ -67,11 +66,14 @@ public class SurvivalMode extends QuizMode {
             }
             System.out.println(ColorCode.separator(50));
         }
-        if (user instanceof RegisteredUser regUser) {
-            for (Question q : failed) {
-                regUser.addFailedQuestion(q);
+        if (user.canSaveProgress()) {
+            int userId = Integer.parseInt(user.getUserId());
+            DataManager dm = new DataManager();
+            for (Integer questionId : failedQuestionIds) {
+                dm.addFailedQuestion(userId, questionId);
             }
         }
-        return new QuizResult(score, totalPoints, questions.size(), failed.size());
+
+        return new QuizResult(score, totalPoints, questions.size(), failedQuestionIds.size());
     }
 }

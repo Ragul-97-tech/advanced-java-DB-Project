@@ -44,7 +44,7 @@ public class DataManager {
             stmt.setString(1, "Ragul");
             stmt.setString(2, "Ragul@123");
             stmt.setString(3, "ADMIN");
-            stmt.executeQuery();
+            stmt.executeUpdate();
             logger.info("Default admin user created");
         } catch (SQLException e) {
             logger.error("Error creating default admin", e);
@@ -80,7 +80,7 @@ public class DataManager {
             for (String[] cat : categories) {
                 stmt.setString(1, cat[0]);
                 stmt.setString(2, cat[1]);
-                stmt.executeQuery();
+                stmt.executeUpdate();
             }
             logger.info("Default categories initialized");
         } catch (SQLException e) {
@@ -123,9 +123,9 @@ public class DataManager {
         int attempts = rs.getInt("quizAttempts");
 
         User user = switch (accessLevel) {
-            case ADMIN -> new AdminUser(userId, username, password, "SUPER");
-            case USER -> new RegisteredUser(userId, username, password);
-            case GUEST -> new GuestUser(userId);
+            case ADMIN -> new AdminUser(String.valueOf(userId), username, password, "SUPER");
+            case USER -> new RegisteredUser(String.valueOf(userId), username, password);
+            case GUEST -> new GuestUser(String.valueOf(userId));
         };
 
         user.setTotalScore(score);
@@ -144,7 +144,7 @@ public class DataManager {
             if (affected > 0) {
                 ResultSet keys = stmt.getGeneratedKeys();
                 if (keys.next()) {
-                    user.setUserId(keys.getInt(1));
+                    user.setUserId(String.valueOf(keys.getInt(1)));
                 }
                 logger.info("User added: " + user.getUserName());
                 return true;
@@ -160,7 +160,7 @@ public class DataManager {
             PreparedStatement stmt = connection.prepareStatement(DBQueries.UPDATE_USER_SCORE);
             stmt.setInt(1, scoreToAdd);
             stmt.setInt(2, userId);
-            stmt.executeQuery();
+            stmt.executeUpdate();
             logger.info("User score update for userId: " + userId);
         } catch (SQLException e) {
             logger.error("Error on updating user score",e);
@@ -171,14 +171,14 @@ public class DataManager {
         try {
             PreparedStatement stmt = connection.prepareStatement(DBQueries.PROMOTE_USER_TO_ADMIN);
             stmt.setInt(1, userId);
-            stmt.executeQuery();
+            stmt.executeUpdate();
             logger.info("User promoted to admin: {}", userId);
         } catch (SQLException e) {
             logger.error("Error on promoting user to admin",e);
         }
     }
 
-    public ArrayList<User> getAllUsers(User user) {
+    public ArrayList<User> getAllUsers() {
         ArrayList<User> users = new ArrayList<>();
         try {
             PreparedStatement stmt = connection.prepareStatement(DBQueries.GET_ALL_USERS, Statement.RETURN_GENERATED_KEYS);
@@ -198,7 +198,10 @@ public class DataManager {
             PreparedStatement stmt = connection.prepareStatement(DBQueries.GET_ALL_CATEGORIES);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                categories.add(new Category(rs.getInt("categoryId"), rs.getString("categoryName"), rs.getString("categoryDescription")));
+                int id = rs.getInt("categoryId");
+                String name = rs.getString("categoryName");
+                String desc = rs.getString("categoryDescription");
+                categories.add(new Category(String.valueOf(id), name, desc));
             }
         } catch (SQLException e) {
             logger.error("Error on getting categories",e);
@@ -212,7 +215,7 @@ public class DataManager {
             stmt.setString(1, name);
             ResultSet rs = stmt.executeQuery();
             if (rs.next())
-                return new Category(rs.getInt("categoryId"), rs.getString("categoryName"), rs.getString("categoryDescription"));
+                return new Category(String.valueOf(rs.getInt("categoryId")), rs.getString("categoryName"), rs.getString("categoryDescription"));
         } catch (SQLException e) {
             logger.error("Error on finding category by category name: {}", name, e);
         }
@@ -225,7 +228,7 @@ public class DataManager {
             stmt.setInt(1, categoryId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return new Category(rs.getInt("categoryId"), rs.getString("categoryName"), rs.getString("categoryDescription"));
+                return new Category(String.valueOf(rs.getInt("categoryId")), rs.getString("categoryName"), rs.getString("categoryDescription"));
             }
         } catch (SQLException e) {
             logger.error("Error on finding category by ID: {}", categoryId, e);
@@ -238,7 +241,7 @@ public class DataManager {
             PreparedStatement stmt = connection.prepareStatement(DBQueries.INSERT_CATEGORY);
             stmt.setString(1, name);
             stmt.setString(2, description);
-            stmt.executeQuery();
+            stmt.executeUpdate();
             logger.info("Category added: " + name);
             return true;
         } catch (SQLException e) {
@@ -350,7 +353,7 @@ public class DataManager {
         int correctOption = getCorrectOptionIndex(questionId);
 
         if (options != null && correctOption != -1) {
-            return new Question(questionId, questionText, options, correctOption, categoryId, difficulty, points);
+            return new Question(String.valueOf(questionId), questionText, options, correctOption, String.valueOf(categoryId), difficulty, points);
         }
         return null;
     }
@@ -558,13 +561,14 @@ public class DataManager {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                int attemptId = rs.getInt("historyId");
+                String attemptId = String.valueOf(rs.getInt("historyId"));
                 String mode = rs.getString("gameMode");
                 int totalScore = rs.getInt("totalScore");
                 int earnedScore = rs.getInt("earnedScore");
                 String date = rs.getString("quizDate");
 
                 QuizAttempt attempt = new QuizAttempt(attemptId, "", mode, earnedScore, totalScore, "", mode, date);
+                history.add(attempt);
             }
         } catch (SQLException e) {
             logger.error("Error on getting quiz history",e);

@@ -1,16 +1,20 @@
 package com.project.quizapp;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 
 public class AdminPanel {
-    DataManager metaData;
-    AuthenticationManager auth;
-    QuizApplication quizApp;
+    private static final Logger logger = LogManager.getLogger(AdminPanel.class);
+    private DataManager metaData;
+    private AuthenticationManager auth;
+    private QuizApplication quizApp;
 
     public AdminPanel(DataManager metaData, AuthenticationManager auth) {
         this.metaData = metaData;
         this.auth = auth;
-        quizApp = new QuizApplication();
+        this.quizApp = new QuizApplication();
     }
 
     public void showMenu() {
@@ -19,7 +23,7 @@ public class AdminPanel {
         int choice;
         while (true) {
             System.out.println();
-            System.out.println(ColorCode.colored("cyan",ColorCode.boxDouble("              👑 ADMIN:"  + admin.getUserName() + "                             ")));
+            System.out.println(ColorCode.colored("cyan",ColorCode.boxDouble("              👑 ADMIN:"  + admin.getUserName() + "              ")));
 
             System.out.println(ColorCode.colored("YELLOW", " 1.") + " \uD83D\uDCDD Manage Questions");
             System.out.println(ColorCode.colored("YELLOW", " 2.") + " \uD83D\uDCDA Manage Categories");
@@ -74,7 +78,8 @@ public class AdminPanel {
 
         int totalQuestions = 0;
         for (Category cat : categories) {
-            ArrayList<Question> questions = cat.getQuestions();
+            int categoryId = Integer.parseInt(cat.getCategoryId());
+            ArrayList<Question> questions = metaData.getQuestionsByCategory(categoryId);
             if (questions.isEmpty()) continue;
 
             sb.append(ColorCode.colored("yellow", "\n\uD83D\uDCDA   " + cat.getCategoryName() + " (" + questions.size() + " questions)")).append("\n");
@@ -102,7 +107,9 @@ public class AdminPanel {
         System.out.println(ColorCode.colored("red", "0. Cancel"));
         int catChoice = quizApp.getIntInRange("\nSelect category (0-" + categories.size() + "): ", 0, categories.size());
         if (catChoice == 0) return;
+
         Category selectedCat = categories.get(catChoice - 1);
+        int categoryId = Integer.parseInt(selectedCat.getCategoryId());
 
         String questionText = quizApp.getString(ColorCode.colored("magenta", "Enter question text or 0 to exit      : "));
         if (questionText.trim().equals("0") || questionText.trim().isEmpty()) return;
@@ -147,97 +154,121 @@ public class AdminPanel {
                     break;
             }
         }
-        String questionId = metaData.generateNextQuestionId(selectedCat.getCategoryId());
-        Question newQuestion = new Question(questionId, questionText, options, correctOption, selectedCat.getCategoryId(), difficulty, points);
-        metaData.addQuestion(newQuestion);
-        System.out.println("\n"+ColorCode.right("Question added successfully! ID: " + questionId));
+        int questionId = metaData.addQuestion(categoryId, questionText, difficulty, points, options, correctOption);
+        if (questionId > 0) {
+            System.out.println("\n" + ColorCode.right("Question added successfully! ID: " + questionId));
+            logger.info("Question added with ID: " + questionId);
+        } else {
+            System.out.println(ColorCode.error("Failed to add question!"));
+            logger.error("Failed to add question");
+        }
     }
 
     void editQuestion() {
-        System.out.println("\n"+ColorCode.colored("blue", ColorCode.boxDouble("    Edit Question    ")));
+        System.out.println("\n" + ColorCode.colored("blue", ColorCode.boxDouble("    Edit Question    ")));
         String questId = quizApp.getString(ColorCode.colored("cyan", "\n\uD83D\uDD0D Enter Question ID or 0 to exit: "));
         if (questId.trim().equals("0")) return;
 
-        Question foundQuest = null;
-//        Category foundCat = null;
+        try {
+            int questionId = Integer.parseInt(questId);
+            Question foundQuest = metaData.getQuestionById(questionId);
 
-        ArrayList<Category> categories = metaData.getCategories();
-        for (Category cat : categories) {
-            for (Question q : cat.getQuestions()) {
-                if (q.getQuestionId().equalsIgnoreCase(questId)) {
-                    foundQuest = q;
-//                    foundCat = cat;
-                    break;
+            if (foundQuest == null) {
+                System.out.println(ColorCode.warning("Question not found!"));
+                return;
+            }
+
+            System.out.println(ColorCode.colored("cyan", "\n\uD83D\uDCDD Current Question:"));
+            System.out.println(ColorCode.BOLD + foundQuest.getQuestionText() + ColorCode.RESET);
+            System.out.println(ColorCode.DIM + "[" + foundQuest.getDifficulty() + " | " + foundQuest.getPoints() + " points]" + ColorCode.RESET);
+
+            String newText = quizApp.getString(ColorCode.colored("magenta", "\n✏\uFE0F  New question text (Enter to keep current, 0 to cancel): "));
+            if (newText.trim().equals("0")) return;
+
+            if (quizApp.getYesNo("Are you wants to update options? (y/n): ")) {
+                for (int i = 0; i < foundQuest.getOptions().length; i++) {
+                    System.out.println(ColorCode.BOLD + ColorCode.YELLOW + " " + (i + 1) + ". " + foundQuest.getOptions()[i] + ColorCode.RESET);
+                }
+
+                int chosenOption = quizApp.getIntInRange("\n➤ Which option to edit (1-" + foundQuest.getOptions().length + "): ", 1, foundQuest.getOptions().length) - 1;
+                String newOption = quizApp.getString("Enter new option instead of this " + foundQuest.getOptions()[chosenOption] + ": ");
+//                newOption.trim().isEmpty() ? metaData.;
+
+                if (quizApp.getYesNo(ColorCode.colored("magenta", "Are you wants to change the correct option? (y/n): "))) {
+                    int correctOption = quizApp.getIntInRange("Enter correct option number (1-" + foundQuest.getOptions().length + ") or 0 to exit: ", 1, foundQuest.getOptions().length) - 1;
+                    if (correctOption == 0) return;
+                    foundQuest.setCorrectOption(correctOption);
+                }
+                foundQuest.getOptions()[chosenOption] = newOption;
+            }
+
+            String newDifficulty = foundQuest.getDifficulty();
+            int newPoints = foundQuest.getPoints();
+
+            if (quizApp.getYesNo("Update difficulty and points? (y/n): ")) {
+                System.out.println("1. Easy (5 points)");
+                System.out.println("2. Medium (8 points)");
+                System.out.println("3. Hard (10 points)");
+                int diffChoice = quizApp.getIntInRange("Choose (1-3): ", 1, 3);
+
+                switch (diffChoice) {
+                    case 1:
+                        newDifficulty = "EASY";
+                        newPoints = 5;
+                        break;
+                    case 2:
+                        newDifficulty = "MEDIUM";
+                        newPoints = 8;
+                        break;
+                    case 3:
+                        newDifficulty = "HARD";
+                        newPoints = 10;
+                        break;
                 }
             }
-            if (foundQuest != null) break;
-        }
-        if (foundQuest == null) {
-            System.out.println(ColorCode.warning("Question not found!"));
-            return;
-        }
-        System.out.println(ColorCode.colored("cyan", "\n\uD83D\uDCDD Current Question:"));
-        System.out.println(ColorCode.BOLD + foundQuest.getQuestionText() + ColorCode.RESET);
-        System.out.println(ColorCode.DIM + "[" + foundQuest.getDifficulty() + " | " + foundQuest.getPoints() + " points]" + ColorCode.RESET);
-        
-        String newText = quizApp.getString(ColorCode.colored("magenta", "\n✏\uFE0F  New question text (Enter to keep current, 0 to cancel): "));
-        if (newText.trim().equals("0")) return;
 
-        if (quizApp.getYesNo("Are you wants to update options? (y/n): ")) {
-            for (int i = 0; i < foundQuest.getOptions().length; i++) {
-                System.out.println(ColorCode.BOLD + ColorCode.YELLOW + " " + (i+1) + ". " + foundQuest.getOptions()[i] + ColorCode.RESET);
+            if (!newText.trim().isEmpty()) {
+                metaData.updateQuestion(questionId, newText, newDifficulty, newPoints);
+            } else {
+                metaData.updateQuestion(questionId, foundQuest.getQuestionText(), newDifficulty, newPoints);
             }
 
-            int chosenOption = quizApp.getIntInRange("\n➤ Which option to edit (1-" + foundQuest.getOptions().length + "): ", 1, foundQuest.getOptions().length) - 1;
-            String newOption = quizApp.getString("Enter new option instead of this " + foundQuest.getOptions()[chosenOption] + ": ");
-            
-            if (quizApp.getYesNo(ColorCode.colored("magenta", "Are you wants to change the correct option? (y/n): "))) {
-                int correctOption = quizApp.getIntInRange("Enter correct option number (1-" + foundQuest.getOptions().length + ") or 0 to exit: " , 1, foundQuest.getOptions().length) - 1;
-                if (correctOption == 0) return;
-                foundQuest.setCorrectOption(correctOption);
-            }
-            foundQuest.getOptions()[chosenOption] = newOption;
+            System.out.println(ColorCode.right("Question updated successfully!"));
+            logger.info("Question updated: " + questionId);
+        } catch (NumberFormatException e) {
+            System.out.println(ColorCode.error("Invalid question ID!"));
         }
-        if (!newText.trim().isEmpty()) {
-            foundQuest.setQuestionText(newText);
-        }
-
-        metaData.saveAllQuestions();
-        System.out.println(ColorCode.right("Question updated successfully!"));
-        System.out.println(ColorCode.colored("blue","════════════════════════════════════════\n"));
     }
 
-    void deleteQuestion() {
+    public void deleteQuestion() {
         System.out.println(ColorCode.colored("blue", ColorCode.boxDouble("       🗑️  DELETE QUESTION 🗑️        ")));
 
         String questId = quizApp.getString(ColorCode.colored("cyan", "\n\uD83D\uDD0D Enter Question ID or 0 to exit: "));
         if (questId.trim().equals("0")) return;
 
-        boolean found = false;
-        ArrayList<Category> categories = metaData.getCategories();
+       try {
+           int questionId = Integer.parseInt(questId);
+           Question q = metaData.getQuestionById(questionId);
+           if (q != null) {
+               System.out.println(ColorCode.colored("yellow", "Found: " + q.getQuestionText()));
 
-        for (Category cat : categories) {
-            for (Question q : cat.getQuestions()) {
-                if (q.getQuestionId().equalsIgnoreCase(questId)) {
-                    System.out.println(ColorCode.colored("yellow", "Found: " + q.getQuestionText()));
-                    if (quizApp.getYesNo((ColorCode.colored("red", "Are you confirm deletion? (y/n): ")))) {
-                        metaData.removeQuestions(cat.getCategoryId(), questId);
-                        System.out.println(ColorCode.right("Question deleted!"));
-                    }
-                    found = true;
-                    break;
-                }
-            }
-            if (found) break;
-        }
-        if (!found)
-            System.out.println(ColorCode.warning("Question not found!"));
+               if (quizApp.getYesNo(ColorCode.colored("red", "Are you sure you want to delete? (y/n): "))) {
+                   metaData.removeQuestions(questionId);
+                   System.out.println(ColorCode.right("Question deleted!"));
+                   logger.info("Question deleted: " + questionId);
+               }
+           } else {
+               System.out.println(ColorCode.warning("Question not found!"));
+           }
+       } catch (NumberFormatException e) {
+           System.out.println(ColorCode.error("Invalid question ID!"));
+       }
     }
 
     private void promoteUserToAdmin() {
         System.out.println("\n" + ColorCode.colored("magenta", ColorCode.boxDouble("       👑 PROMOTE TO ADMIN 👑       ")));
 
-        ArrayList<User> users = metaData.getUsers();
+        ArrayList<User> users = metaData.getAllUsers();
         ArrayList<User> regularUsers = new ArrayList<>();
 
         for (User u : users) {
@@ -266,8 +297,10 @@ public class AdminPanel {
         System.out.println(ColorCode.warning("Promote " + selectedUser.getUserName() + " to Admin?"));
 
         if (quizApp.getYesNo(ColorCode.colored("green", "Confirm? (y/n): "))) {
-            metaData.promoteToAdmin(selectedUser);
+            int userId = Integer.parseInt(selectedUser.getUserId());
+            metaData.promoteToAdmin(userId);
             System.out.println(ColorCode.right(selectedUser.getUserName() + " is now an Admin! \uD83D\uDC51"));
+            logger.info("User promoted to admin: " + userId);
         }
         else
             System.out.println(ColorCode.colored("yellow", "Promotion cancelled."));
@@ -279,47 +312,59 @@ public class AdminPanel {
         String questId = quizApp.getString(ColorCode.colored("cyan", "\n🔍 Enter Question ID (0 to cancel): "));
         if (questId.trim().equals("0")) return;
 
-        Question foundQuest = null;
-        Category fromCategory = null;
+        try {
+            int questionId = Integer.parseInt(questId);
+            Question foundQuest = metaData.getQuestionById(questionId);
 
-        for (Category cat : metaData.getCategories()) {
-            for (Question q : cat.getQuestions()) {
-                if (q.getQuestionId().equalsIgnoreCase(questId)) {
-                    foundQuest = q;
-                    fromCategory = cat;
-                    break;
+            if (foundQuest == null) {
+                System.out.println(ColorCode.right("Question not found!"));
+                return;
+            }
+
+            int currentCategoryId = Integer.parseInt(foundQuest.getCategory());
+            Category fromCategory = metaData.findCategoryById(currentCategoryId);
+
+            System.out.println(ColorCode.colored("yellow", "\n📝 Question: " + foundQuest.getQuestionText()));
+            System.out.println(ColorCode.colored("cyan", "Current Category: " + fromCategory.getCategoryName()));
+
+            ArrayList<Category> categories = metaData.getCategories();
+            System.out.println(ColorCode.colored("green", "\n📚 Move to:"));
+
+            int displayIndex = 1;
+            for (Category cat : categories) {
+                if (!cat.getCategoryId().equals(foundQuest.getCategory())) {
+                    System.out.println(ColorCode.colored("yellow", displayIndex + ". " + cat.getCategoryName()));
+                    displayIndex++;
                 }
             }
-            if (foundQuest != null) break;
+            System.out.println(ColorCode.colored("red", "0. Cancel"));
+
+            int choice = quizApp.getIntInRange(ColorCode.colored("white", "\n➤ Select destination (0-" + (displayIndex - 1) + "): "), 0, displayIndex - 1);
+
+            if (choice == 0) return;
+
+            int selectedIndex = 0;
+            Category toCategory = null;
+            for (Category cat : categories) {
+                if (!cat.getCategoryId().equals(foundQuest.getCategory())) {
+                    selectedIndex++;
+                    if (selectedIndex == choice) {
+                        toCategory = cat;
+                        break;
+                    }
+                }
+            }
+
+            if (toCategory != null) {
+                int newCategoryId = Integer.parseInt(toCategory.getCategoryId());
+                metaData.updateQuestionCategory(questionId, newCategoryId);
+                System.out.println(ColorCode.right("Question moved to " + toCategory.getCategoryName() + "!"));
+                logger.info("Question moved: " + questionId + " to category: " + newCategoryId);
+            }
+
+        } catch (NumberFormatException e) {
+            System.out.println(ColorCode.error("Invalid question ID!"));
         }
-
-        if (foundQuest == null) {
-            System.out.println(ColorCode.right("Question not found!"));
-            return;
-        }
-
-        System.out.println(ColorCode.colored("yellow", "\n📝 Question: " + foundQuest.getQuestionText()));
-        System.out.println(ColorCode.colored("cyan", "Current Category: " + fromCategory.getCategoryName()));
-
-        ArrayList<Category> categories = metaData.getCategories();
-        System.out.println(ColorCode.colored("green", "\n\uD83D\uDCDA Move to:"));
-        for (int i = 0; i < categories.size(); i++) {
-            if (categories.get(i).getCategoryId().equals(fromCategory.getCategoryId())) continue;
-            System.out.println(ColorCode.colored("yellow", (i+1) + ". " + categories.get(i).getCategoryName()));
-        }
-        System.out.println(ColorCode.colored("red", "0. Cancel"));
-        int choice = quizApp.getIntInRange(ColorCode.colored("white", "\n➤ Select destination (0-" + categories.size() + "): "), 0, categories.size());
-
-        if (choice == 0) return;
-
-        Category toCategory = categories.get(choice-1);
-        if (toCategory.getCategoryId().equals(fromCategory.getCategoryId())) {
-            System.out.println(ColorCode.warning("Same category selected!"));
-            return;
-        }
-
-        metaData.moveQuestion(questId, fromCategory.getCategoryId(), toCategory.getCategoryId());
-        System.out.println(ColorCode.right("Question moved to " + toCategory.getCategoryName() + "!"));
     }
 
     private void manageCategoriesMenu() {
@@ -349,13 +394,17 @@ public class AdminPanel {
         ArrayList<Category> categories = metaData.getCategories();
         for (int i = 0; i < categories.size(); i++) {
             Category cat = categories.get(i);
+            int categoryId = Integer.parseInt(cat.getCategoryId());
+            int totalQuestions = metaData.getCategoryQuestionCount(categoryId);
             sb.append(ColorCode.BOLD).append(ColorCode.WHITE).append(i+1).append(". ").append(cat.getCategoryName()).append("\n");
             sb.append("   ID             : ").append(cat.getCategoryId()).append("\n");
             sb.append("   Description    : ").append(cat.getDescription()).append("\n");
-            sb.append("   Total Questions: ").append(cat.getTotalQuestions()).append(ColorCode.RESET).append("\n");
+            sb.append("   Total Questions: ").append(totalQuestions).append(ColorCode.RESET).append("\n");
+
+            ArrayList<Question> allQuestions = metaData.getQuestionsByCategory(categoryId);
             int easy = 0, medium = 0, hard = 0;
-            for (Question q : cat.getQuestions()) {
-                String diff = q.getDifficulty();
+            for (Question q : allQuestions) {
+                String diff = q.getDifficulty().toUpperCase();
                 if (diff.equalsIgnoreCase("EASY")) easy++;
                 else if (diff.equalsIgnoreCase("MEDIUM")) medium++;
                 else if (diff.equalsIgnoreCase("HARD")) hard++;
@@ -365,14 +414,13 @@ public class AdminPanel {
             sb.append(ColorCode.colored("yellow","Medium: " + medium)).append("\n");
             sb.append(ColorCode.colored("red","Hard  : " + hard)).append("\n");
             sb.append(ColorCode.separator(50)).append("\n");
-
         }
         return sb.toString();
     }
 
     String viewAllUsers() {
         StringBuilder sb = new StringBuilder("\n"+ColorCode.colored("blue", ColorCode.boxDouble("     All users     "))).append("\n");
-        ArrayList<User> users = metaData.getUsers();
+        ArrayList<User> users = metaData.getAllUsers();
         sb.append(ColorCode.colored("white", "Total Users: " + users.size())).append("\n");
         for (int i = 0; i < users.size(); i++) {
             User u = users.get(i);
@@ -381,7 +429,7 @@ public class AdminPanel {
             sb.append("   Role         : ").append(roleColor).append(u.getRole()).append("\n");
             sb.append("   Total Score  : ").append(u.getTotalScore()).append("\n");
             sb.append("   Quizzes Taken: ").append(u.getQuizzesTaken()).append("\n");
-            sb.append(ColorCode.colored("blue","════════════════════════════════════════")).append("\n");
+            sb.append(ColorCode.colored("blue",ColorCode.separator(50))).append("\n");
         }
         return sb.toString();
     }
@@ -402,11 +450,12 @@ public class AdminPanel {
             description = "New Category - " + catName;
         }
 
-        String categoryId = metaData.generateNextCategoryId();
-        Category newCategory = new Category(categoryId, catName, description);
-
-        metaData.addCategory(newCategory);
-        System.out.println("\n"+ColorCode.right("Category added successfully! Category ID: " + categoryId));
+        if (metaData.addCategory(catName, description)) {
+            System.out.println("\n" + ColorCode.right("Category added successfully!"));
+            logger.info("Category added: " + catName);
+        } else {
+            System.out.println(ColorCode.error("Failed to add category!"));
+        }
     }
 
     private void editCategory() {
@@ -427,16 +476,17 @@ public class AdminPanel {
 
         String newName = quizApp.getString(ColorCode.colored("magenta", "\n✏\uFE0F  New name (Enter to keep, 0 to cancel): "));
         if (newName.trim().equals("0")) return;
-        if (!newName.trim().isEmpty()) {
-            selectedCat.setCategoryName(newName);
-        }
 
-        String newDescribe = quizApp.getString(ColorCode.colored("magenta","✏\uFE0F  New description (Enter to keep): "));
-        if (!newDescribe.trim().isEmpty()) {
-            selectedCat.setDescription(newDescribe);
-        }
-        metaData.updateCategory();
-        System.out.println("\n"+ColorCode.right("Category updated successfully!"));
+        String newDescribe = quizApp.getYesNo("Are you wants to change the description? (y/n)") ? quizApp.getString(ColorCode.colored("magenta","✏\uFE0F  New description (Enter to keep): ")) : "";
+
+        String finalName = newName.trim().isEmpty() ? selectedCat.getCategoryName() : newName;
+        String finalDesc = newDescribe.trim().isEmpty() ? selectedCat.getDescription() : newDescribe;
+
+        int categoryId = Integer.parseInt(selectedCat.getCategoryId());
+        metaData.updateCategory(categoryId, finalName, finalDesc);
+
+        System.out.println("\n" + ColorCode.right("Category updated successfully!"));
+        logger.info("Category updated: " + categoryId);
     }
 
     private void deleteCategory() {
@@ -445,8 +495,10 @@ public class AdminPanel {
         ArrayList<Category> categories = metaData.getCategories();
         for (int i = 0; i < categories.size(); i++) {
             Category cat = categories.get(i);
+            int categoryId = Integer.parseInt(cat.getCategoryId());
+            int questionCount = metaData.getCategoryQuestionCount(categoryId);
             System.out.println(ColorCode.colored("yellow", (i + 1) + ". ") + cat.getCategoryName() +
-                    ColorCode.DIM + " (" + cat.getTotalQuestions() + " questions)" + ColorCode.RESET);
+                    ColorCode.DIM + " (" + questionCount + " questions)" + ColorCode.RESET);
         }
         System.out.println(ColorCode.colored("red", "0. Cancel"));
 
@@ -454,12 +506,14 @@ public class AdminPanel {
         if (choice == 0) return;
 
         Category selectedCat = categories.get(choice - 1);
+        int categoryId = Integer.parseInt(selectedCat.getCategoryId());
+        int questionCount = metaData.getCategoryQuestionCount(categoryId);
 
         System.out.println("\n"+ColorCode.warning("Category: " + selectedCat.getCategoryName()));
-        System.out.println(ColorCode.warning("This will delete " + selectedCat.getTotalQuestions() + " questions!"));
+        System.out.println(ColorCode.warning("This will delete " + questionCount + " questions!"));
 
         if (quizApp.getYesNo(ColorCode.colored("red", "⚠️  Confirm deletion? (y/n): "))) {
-            metaData.removeCategory(selectedCat.getCategoryId());
+            metaData.removeCategory(categoryId);
             System.out.println(ColorCode.right("Category deleted successfully!"));
         } else {
             System.out.println(ColorCode.warning("Deletion cancelled."));
@@ -468,11 +522,13 @@ public class AdminPanel {
 
     String viewSystemStatistics() {
         StringBuilder sb = new StringBuilder(ColorCode.colored("blue", ColorCode.boxDouble("      System Statistics      "))).append("\n");
-        ArrayList<User> users = metaData.getUsers();
+        ArrayList<User> users = metaData.getAllUsers();
         ArrayList<Category> categories = metaData.getCategories();
+        int totalQuestions = metaData.getTotalQuestionsCount();
+
         sb.append(ColorCode.colored("yellow", "Total Users     : " + users.size())).append("\n");
         sb.append(ColorCode.colored("yellow", "Total Categories: " + categories.size())).append("\n");
-        sb.append(ColorCode.colored("yellow", "Total Questions : " + metaData.getTotalQuestionsCount())).append("\n");
+        sb.append(ColorCode.colored("yellow", "Total Questions : " + totalQuestions)).append("\n");
         int admins = 0, regularUser =  0;
         for (User u : users) {
             if (u.getRole().equals("ADMIN")) admins++;
@@ -487,7 +543,7 @@ public class AdminPanel {
         }
         sb.append(ColorCode.colored("magenta", "Total Quizzes Taken: " + totalQuizzes)).append("\n");
         sb.append(ColorCode.colored("cyan","Total Points Earned: " + totalScore)).append("\n");
-        sb.append(ColorCode.colored("blue","════════════════════════════════════════")).append("\n");
+        sb.append(ColorCode.colored("blue",ColorCode.separator(50))).append("\n");
         return sb.toString();
     }
 }

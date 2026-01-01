@@ -3,7 +3,7 @@ package com.project.quizapp;
 import java.util.ArrayList;
 
 public class StandardMode extends QuizMode {
-    QuizApplication quizApp;
+    private QuizApplication quizApp;
 
     public StandardMode() {
         super("Standard Mode", "Answer all questions at own pace");
@@ -19,8 +19,7 @@ public class StandardMode extends QuizMode {
         for (Question q : questions) 
             totalPoints += q.getPoints();
         
-        System.out.println(totalPoints);
-        ArrayList<Question> failed = new ArrayList<>();
+        ArrayList<Integer> failedQuestionIds = new ArrayList<>();
         System.out.println("\n"+ColorCode.colored("cyan", ColorCode.boxDouble("   Starting: " + quiz.getQuizTitle()+ "   ")));
         System.out.println(ColorCode.colored("Cyan", "Total Questions: " + questions.size()));
         System.out.println();
@@ -38,7 +37,10 @@ public class StandardMode extends QuizMode {
 
             int answer = quizApp.getIntInRange(ColorCode.colored("white", "Enter your answer or 0 to exit(0-" + options.length + "): "), 0, options.length);
 
-            if (answer == 0) return new QuizResult(score, totalPoints, questions.size(), failed.size());
+            if (answer == 0) {
+                logger.info("User exited quiz early");
+                return new QuizResult(score, totalPoints, questions.size(), failedQuestionIds.size());
+            }
 
             if (answer - 1 == q.getCorrectOption()) {
                 System.out.println(ColorCode.right("Correct! +" + q.getPoints() + " points"));
@@ -46,17 +48,18 @@ public class StandardMode extends QuizMode {
             }
             else {
                 System.out.println(ColorCode.error("Incorrect! Correct answer: " + ColorCode.colored("green", options[q.getCorrectOption()])));
-                failed.add(q);
+                failedQuestionIds.add(Integer.parseInt(q.getQuestionId()));
             }
             System.out.println(ColorCode.separator(50));
-
         }
 
-        if (user instanceof RegisteredUser regUser) {
-            for (Question q : failed) {
-                regUser.addFailedQuestion(q);
+        if (user.canSaveProgress()) {
+            int userId = Integer.parseInt(user.getUserId());
+            DataManager dm = new DataManager();
+            for (Integer questionId : failedQuestionIds) {
+                dm.addFailedQuestion(userId, questionId);
             }
         }
-        return new QuizResult(score, totalPoints, questions.size(), failed.size());
+        return new QuizResult(score, totalPoints, questions.size(), failedQuestionIds.size());
     }
 }

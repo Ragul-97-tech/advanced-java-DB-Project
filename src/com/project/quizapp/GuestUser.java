@@ -2,7 +2,7 @@ package com.project.quizapp;
 
 public class GuestUser extends User {
     int sessionScore;
-    public GuestUser(int guestId) {
+    public GuestUser(String guestId) {
         super(guestId, "Guest_" + guestId, "", "GUEST");
         this.sessionScore = 0;
     }

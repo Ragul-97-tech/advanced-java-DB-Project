@@ -3,13 +3,13 @@ package com.project.quizapp;
 import java.util.ArrayList;
 
 public class Quiz {
-    String quizId;
-    String quizTitle;
-    String category;
-    ArrayList<Question> questions;
-    int totalQuestions;
-    String quizMode;
-    int timeLimit;
+    private String quizId;
+    private String quizTitle;
+    private String category;
+    private ArrayList<Question> questions;
+    private int totalQuestions;
+    private String quizMode;
+    private int timeLimit;
 
     public Quiz(String quizId, String quizTitle, String category, ArrayList<Question> questions, String quizMode, int timeLimit) {
         this.quizId = quizId;
@@ -56,14 +56,5 @@ public class Quiz {
             questions.set(i, questions.get(j));
             questions.set(i, temp);
         }
-    }
-
-    public ArrayList<Question> getSubset(int count) {
-        ArrayList<Question> subset = new ArrayList<>();
-        int limit = Math.min(count, questions.size());
-        for (int i = 0; i < limit; i++) {
-            subset.add(questions.get(i));
-        }
-        return subset;
     }
 }

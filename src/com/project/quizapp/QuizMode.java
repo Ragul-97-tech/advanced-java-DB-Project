@@ -1,8 +1,12 @@
 package com.project.quizapp;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public abstract class QuizMode {
-    String modeName;
-    String description;
+    protected static final Logger logger = LogManager.getLogger(QuizMode.class);
+    protected String modeName;
+    protected String description;
 
     public QuizMode(String modeName, String description) {
         this.modeName = modeName;
@@ -12,7 +16,6 @@ public abstract class QuizMode {
     public String getModeName() {
         return modeName;
     }
-
     public String getDescription() {
         return description;
     }

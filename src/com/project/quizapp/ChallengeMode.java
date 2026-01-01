@@ -3,8 +3,8 @@ package com.project.quizapp;
 import java.util.ArrayList;
 
 public class ChallengeMode extends QuizMode {
-    QuizApplication quizApp;
-    static final int STREAK_BONUS = 5;
+    private QuizApplication quizApp;
+    private static final int STREAK_BONUS = 5;
 
     public ChallengeMode() {
         super("Challenge Mode", "Earn bonus points for answer streaks!");
@@ -22,7 +22,7 @@ public class ChallengeMode extends QuizMode {
             totalPoints += q.getPoints();
         }
 
-        ArrayList<Question> failed = new ArrayList<>();
+        ArrayList<Integer> failedQuestionIds = new ArrayList<>();
         int streak = 0;
         int maxStreak = 0;
 
@@ -49,7 +49,7 @@ public class ChallengeMode extends QuizMode {
 
             if (answer == 0) {
                 System.out.println(ColorCode.warning("\nQuiz exited!"));
-                return new QuizResult(score, totalPoints, i, failed.size());
+                return new QuizResult(score, totalPoints, i, failedQuestionIds.size());
             }
 
             if (answer - 1 == q.getCorrectOption()) {
@@ -71,7 +71,7 @@ public class ChallengeMode extends QuizMode {
                     System.out.println(ColorCode.error("Incorrect! Correct: " + ColorCode.colored("green",options[q.getCorrectOption()])));
                 }
                 streak = 0;
-                failed.add(q);
+                failedQuestionIds.add(Integer.parseInt(q.getQuestionId()));
             }
         }
 
@@ -79,13 +79,14 @@ public class ChallengeMode extends QuizMode {
             System.out.println(ColorCode.colored("yellow", "\n🏆 Max Streak: " + maxStreak + "!"));
         }
 
-        if (user instanceof RegisteredUser regUser) {
-            for (Question q : failed) {
-                regUser.addFailedQuestion(q);
+        if (user.canSaveProgress()) {
+            int userId = Integer.parseInt(user.getUserId());
+            DataManager dm = new DataManager();
+            for (Integer questionId : failedQuestionIds) {
+                dm.addFailedQuestion(userId, questionId);
             }
         }
 
-        return new QuizResult(score, totalPoints, questions.size(), failed.size());
+        return new QuizResult(score, totalPoints, questions.size(), failedQuestionIds.size());
     }
-
 }

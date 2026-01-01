@@ -2,6 +2,7 @@
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+!**/src/com/project/quizapp/quiz_data
 .kotlin
 
 ### Eclipse ###
