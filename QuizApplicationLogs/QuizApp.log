@@ -1,0 +1,164 @@
+2026-01-02 16:57:35,358 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 16:57:35,359 com.project.quizapp.DataManager INFO  Initializing application data 
+2026-01-02 16:57:35,386 com.project.quizapp.DataManager INFO  Default admin user created 
+2026-01-02 16:57:35,387 com.project.quizapp.DataManager INFO  Data initialization completed 
+2026-01-02 16:57:35,387 com.project.quizapp.QuizApplication INFO  Data manager initialized successfully 
+2026-01-02 16:57:35,389 com.project.quizapp.MainMenu INFO  Main menu started    
+2026-01-02 16:57:43,231 com.project.quizapp.QuizApplication FATAL Critical application error 
+java.lang.IllegalArgumentException: Invalid salt version
+	at org.mindrot.jbcrypt.BCrypt.hashpw(BCrypt.java:659) ~[jbcrypt-0.4.jar:?]
+	at org.mindrot.jbcrypt.BCrypt.checkpw(BCrypt.java:764) ~[jbcrypt-0.4.jar:?]
+	at com.project.quizapp.AuthenticationManager.login(AuthenticationManager.java:122) ~[advanced-java-DB-Project/:?]
+	at com.project.quizapp.AuthenticationManager.authMenu(AuthenticationManager.java:54) ~[advanced-java-DB-Project/:?]
+	at com.project.quizapp.MainMenu.start(MainMenu.java:19) ~[advanced-java-DB-Project/:?]
+	at com.project.quizapp.QuizApplication.main(QuizApplication.java:40) ~[advanced-java-DB-Project/:?]
+2026-01-02 16:57:43,252 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 16:57:43,253 com.project.quizapp.DBConnection INFO  Database connection closed 
+2026-01-02 16:57:43,253 com.project.quizapp.QuizApplication INFO  Application terminated 
+2026-01-02 16:59:39,170 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 16:59:39,171 com.project.quizapp.DataManager INFO  Initializing application data 
+2026-01-02 16:59:39,189 com.project.quizapp.DataManager INFO  Data initialization completed 
+2026-01-02 16:59:39,189 com.project.quizapp.QuizApplication INFO  Data manager initialized successfully 
+2026-01-02 16:59:39,191 com.project.quizapp.MainMenu INFO  Main menu started    
+2026-01-02 16:59:47,595 com.project.quizapp.QuizApplication FATAL Critical application error 
+java.lang.NullPointerException: Cannot invoke "com.project.quizapp.User.getPassword()" because "user" is null
+	at com.project.quizapp.AuthenticationManager.login(AuthenticationManager.java:121) ~[advanced-java-DB-Project/:?]
+	at com.project.quizapp.AuthenticationManager.authMenu(AuthenticationManager.java:54) ~[advanced-java-DB-Project/:?]
+	at com.project.quizapp.MainMenu.start(MainMenu.java:19) ~[advanced-java-DB-Project/:?]
+	at com.project.quizapp.QuizApplication.main(QuizApplication.java:40) ~[advanced-java-DB-Project/:?]
+2026-01-02 16:59:47,620 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 16:59:47,621 com.project.quizapp.DBConnection INFO  Database connection closed 
+2026-01-02 16:59:47,621 com.project.quizapp.QuizApplication INFO  Application terminated 
+2026-01-02 17:00:23,272 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 17:00:23,273 com.project.quizapp.DataManager INFO  Initializing application data 
+2026-01-02 17:00:23,290 com.project.quizapp.DataManager INFO  Data initialization completed 
+2026-01-02 17:00:23,290 com.project.quizapp.QuizApplication INFO  Data manager initialized successfully 
+2026-01-02 17:00:23,293 com.project.quizapp.MainMenu INFO  Main menu started    
+2026-01-02 17:00:34,497 com.project.quizapp.AuthenticationManager WARN  Failed login attempt for username: raguli 
+2026-01-02 17:00:50,694 com.project.quizapp.QuizApplication FATAL Critical application error 
+java.lang.IllegalArgumentException: Invalid salt version
+	at org.mindrot.jbcrypt.BCrypt.hashpw(BCrypt.java:659) ~[jbcrypt-0.4.jar:?]
+	at org.mindrot.jbcrypt.BCrypt.checkpw(BCrypt.java:764) ~[jbcrypt-0.4.jar:?]
+	at com.project.quizapp.AuthenticationManager.login(AuthenticationManager.java:120) ~[advanced-java-DB-Project/:?]
+	at com.project.quizapp.AuthenticationManager.authMenu(AuthenticationManager.java:54) ~[advanced-java-DB-Project/:?]
+	at com.project.quizapp.AuthenticationManager.authMenu(AuthenticationManager.java:62) ~[advanced-java-DB-Project/:?]
+	at com.project.quizapp.MainMenu.start(MainMenu.java:19) ~[advanced-java-DB-Project/:?]
+	at com.project.quizapp.QuizApplication.main(QuizApplication.java:40) ~[advanced-java-DB-Project/:?]
+2026-01-02 17:00:50,724 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 17:00:50,725 com.project.quizapp.DBConnection INFO  Database connection closed 
+2026-01-02 17:00:50,725 com.project.quizapp.QuizApplication INFO  Application terminated 
+2026-01-02 17:02:36,348 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 17:02:36,349 com.project.quizapp.DataManager INFO  Initializing application data 
+2026-01-02 17:02:36,444 com.project.quizapp.DataManager INFO  Default admin user created 
+2026-01-02 17:02:36,446 com.project.quizapp.DataManager INFO  Data initialization completed 
+2026-01-02 17:02:36,446 com.project.quizapp.QuizApplication INFO  Data manager initialized successfully 
+2026-01-02 17:02:36,447 com.project.quizapp.MainMenu INFO  Main menu started    
+2026-01-02 17:02:45,676 com.project.quizapp.AuthenticationManager INFO  User logged in: 20   
+2026-01-02 17:02:45,677 com.project.quizapp.MainMenu INFO  Admin panel accessed by: 20 
+2026-01-02 17:02:54,516 com.project.quizapp.AuthenticationManager INFO  User logged out: Ragul 
+2026-01-02 17:02:59,804 com.project.quizapp.AuthenticationManager WARN  Failed login attempt for username: sndbjshkb 
+2026-01-02 17:03:34,314 com.project.quizapp.DataManager INFO  User added: 21       
+2026-01-02 17:03:34,315 com.project.quizapp.AuthenticationManager INFO  New user registered: 21 
+2026-01-02 17:03:34,315 com.project.quizapp.MainMenu INFO  User menu accessed by: 21 
+2026-01-02 17:04:18,495 com.project.quizapp.UserMenu INFO  Starting quiz: Biology Quiz for user: Lubina 
+2026-01-02 17:05:18,791 com.project.quizapp.QuizMode INFO  User exited quiz early 
+2026-01-02 17:05:18,816 com.project.quizapp.DataManager INFO  User score update for userId: 21 
+2026-01-02 17:05:18,834 com.project.quizapp.DataManager INFO  Quiz history added for user: 21 
+2026-01-02 17:05:18,834 com.project.quizapp.UserMenu INFO  Quiz completed by user: Lubina, Score: 10 
+2026-01-02 17:05:52,808 com.project.quizapp.UserMenu INFO  Starting quiz: Biology Quiz for user: Lubina 
+2026-01-02 17:06:14,911 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 17:06:14,925 com.project.quizapp.DataManager INFO  User score update for userId: 21 
+2026-01-02 17:06:14,943 com.project.quizapp.DataManager INFO  Quiz history added for user: 21 
+2026-01-02 17:06:14,944 com.project.quizapp.UserMenu INFO  Quiz completed by user: Lubina, Score: 50 
+2026-01-02 17:07:05,889 com.project.quizapp.UserMenu INFO  Starting quiz: Science Quiz for user: Lubina 
+2026-01-02 17:08:53,973 com.project.quizapp.DataManager INFO  User score update for userId: 21 
+2026-01-02 17:08:53,986 com.project.quizapp.DataManager INFO  Quiz history added for user: 21 
+2026-01-02 17:08:53,987 com.project.quizapp.UserMenu INFO  Quiz completed by user: Lubina, Score: 51 
+2026-01-02 17:09:30,514 com.project.quizapp.UserMenu INFO  Starting quiz: Geography Quiz for user: Lubina 
+2026-01-02 17:09:34,022 com.project.quizapp.QuizMode INFO  User exited quiz early 
+2026-01-02 17:09:34,045 com.project.quizapp.DataManager INFO  User score update for userId: 21 
+2026-01-02 17:09:34,063 com.project.quizapp.DataManager INFO  Quiz history added for user: 21 
+2026-01-02 17:09:34,065 com.project.quizapp.UserMenu INFO  Quiz completed by user: Lubina, Score: 0 
+2026-01-02 17:09:50,706 com.project.quizapp.UserMenu INFO  Starting quiz: Geography Quiz for user: Lubina 
+2026-01-02 17:10:42,622 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 17:10:42,635 com.project.quizapp.DataManager INFO  Failed question added for user: 21 
+2026-01-02 17:10:42,651 com.project.quizapp.DataManager INFO  User score update for userId: 21 
+2026-01-02 17:10:42,666 com.project.quizapp.DataManager INFO  Quiz history added for user: 21 
+2026-01-02 17:10:42,667 com.project.quizapp.UserMenu INFO  Quiz completed by user: Lubina, Score: 74 
+2026-01-02 17:11:16,967 com.project.quizapp.UserMenu INFO  Starting quiz: English Grammar Quiz for user: Lubina 
+2026-01-02 17:16:12,733 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 17:16:12,745 com.project.quizapp.DataManager INFO  Failed question added for user: 21 
+2026-01-02 17:16:12,759 com.project.quizapp.DataManager INFO  Failed question added for user: 21 
+2026-01-02 17:16:12,809 com.project.quizapp.DataManager INFO  Failed question added for user: 21 
+2026-01-02 17:16:12,827 com.project.quizapp.DataManager INFO  Failed question added for user: 21 
+2026-01-02 17:16:12,839 com.project.quizapp.DataManager INFO  Failed question added for user: 21 
+2026-01-02 17:16:12,852 com.project.quizapp.DataManager INFO  Failed question added for user: 21 
+2026-01-02 17:16:12,865 com.project.quizapp.DataManager INFO  Failed question added for user: 21 
+2026-01-02 17:16:12,878 com.project.quizapp.DataManager INFO  Failed question added for user: 21 
+2026-01-02 17:16:12,896 com.project.quizapp.DataManager INFO  User score update for userId: 21 
+2026-01-02 17:16:12,910 com.project.quizapp.DataManager INFO  Quiz history added for user: 21 
+2026-01-02 17:16:12,910 com.project.quizapp.UserMenu INFO  Quiz completed by user: Lubina, Score: 125 
+2026-01-02 17:17:11,352 com.project.quizapp.UserMenu INFO  Starting quiz: History Quiz for user: Lubina 
+2026-01-02 17:18:42,303 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 17:18:42,315 com.project.quizapp.DataManager INFO  Failed question added for user: 21 
+2026-01-02 17:18:42,329 com.project.quizapp.DataManager INFO  Failed question added for user: 21 
+2026-01-02 17:18:42,346 com.project.quizapp.DataManager INFO  Failed question added for user: 21 
+2026-01-02 17:18:42,363 com.project.quizapp.DataManager INFO  Failed question added for user: 21 
+2026-01-02 17:18:42,380 com.project.quizapp.DataManager INFO  Failed question added for user: 21 
+2026-01-02 17:18:42,392 com.project.quizapp.DataManager INFO  Failed question added for user: 21 
+2026-01-02 17:18:42,405 com.project.quizapp.DataManager INFO  Failed question added for user: 21 
+2026-01-02 17:18:42,418 com.project.quizapp.DataManager INFO  User score update for userId: 21 
+2026-01-02 17:18:42,434 com.project.quizapp.DataManager INFO  Quiz history added for user: 21 
+2026-01-02 17:18:42,435 com.project.quizapp.UserMenu INFO  Quiz completed by user: Lubina, Score: 20 
+2026-01-02 17:18:52,022 com.project.quizapp.AuthenticationManager INFO  User logged out: Lubina 
+2026-01-02 17:20:18,332 com.project.quizapp.DataManager INFO  User added: 22       
+2026-01-02 17:20:18,332 com.project.quizapp.AuthenticationManager INFO  New user registered: 22 
+2026-01-02 17:20:18,332 com.project.quizapp.MainMenu INFO  User menu accessed by: 22 
+2026-01-02 17:22:03,078 com.project.quizapp.UserMenu INFO  Starting quiz: Java Programming Quiz for user: Janani 
+2026-01-02 17:24:18,330 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 17:24:18,344 com.project.quizapp.DataManager INFO  User score update for userId: 22 
+2026-01-02 17:24:18,356 com.project.quizapp.DataManager INFO  Quiz history added for user: 22 
+2026-01-02 17:24:18,358 com.project.quizapp.UserMenu INFO  Quiz completed by user: Janani, Score: 50 
+2026-01-02 17:25:20,510 com.project.quizapp.UserMenu INFO  Starting quiz: Java Programming Quiz for user: Janani 
+2026-01-02 17:30:07,383 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 17:30:07,405 com.project.quizapp.DataManager INFO  Failed question added for user: 22 
+2026-01-02 17:30:07,417 com.project.quizapp.DataManager INFO  Failed question added for user: 22 
+2026-01-02 17:30:07,431 com.project.quizapp.DataManager INFO  User score update for userId: 22 
+2026-01-02 17:30:07,444 com.project.quizapp.DataManager INFO  Quiz history added for user: 22 
+2026-01-02 17:30:07,445 com.project.quizapp.UserMenu INFO  Quiz completed by user: Janani, Score: 64 
+2026-01-02 17:30:25,901 com.project.quizapp.UserMenu INFO  Starting quiz: Java Programming Quiz for user: Janani 
+2026-01-02 17:31:32,691 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 17:31:32,713 com.project.quizapp.DataManager INFO  Failed question added for user: 22 
+2026-01-02 17:31:32,730 com.project.quizapp.DataManager INFO  Failed question added for user: 22 
+2026-01-02 17:31:32,743 com.project.quizapp.DataManager INFO  User score update for userId: 22 
+2026-01-02 17:31:32,762 com.project.quizapp.DataManager INFO  Quiz history added for user: 22 
+2026-01-02 17:31:32,763 com.project.quizapp.UserMenu INFO  Quiz completed by user: Janani, Score: 30 
+2026-01-02 17:31:54,581 com.project.quizapp.UserMenu INFO  Starting quiz: Mathematics Quiz for user: Janani 
+2026-01-02 17:32:15,377 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 17:32:15,395 com.project.quizapp.DataManager INFO  User score update for userId: 22 
+2026-01-02 17:32:15,414 com.project.quizapp.DataManager INFO  Quiz history added for user: 22 
+2026-01-02 17:32:15,414 com.project.quizapp.UserMenu INFO  Quiz completed by user: Janani, Score: 20 
+2026-01-02 17:32:24,879 com.project.quizapp.UserMenu INFO  Starting quiz: Mathematics Quiz for user: Janani 
+2026-01-02 17:33:29,636 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 17:33:29,649 com.project.quizapp.DataManager INFO  User score update for userId: 22 
+2026-01-02 17:33:29,663 com.project.quizapp.DataManager INFO  Quiz history added for user: 22 
+2026-01-02 17:33:29,664 com.project.quizapp.UserMenu INFO  Quiz completed by user: Janani, Score: 32 
+2026-01-02 17:33:48,103 com.project.quizapp.UserMenu INFO  Starting quiz: Mathematics Quiz for user: Janani 
+2026-01-02 17:34:35,115 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 17:34:35,129 com.project.quizapp.DataManager INFO  User score update for userId: 22 
+2026-01-02 17:34:35,142 com.project.quizapp.DataManager INFO  Quiz history added for user: 22 
+2026-01-02 17:34:35,143 com.project.quizapp.UserMenu INFO  Quiz completed by user: Janani, Score: 20 
+2026-01-02 17:34:57,899 com.project.quizapp.UserMenu INFO  Starting quiz: Java Programming Quiz for user: Janani 
+2026-01-02 17:42:21,148 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 17:42:21,149 com.project.quizapp.DataManager INFO  Failed question added for user: 22 
+2026-01-02 17:42:21,161 com.project.quizapp.DataManager INFO  Failed question added for user: 22 
+2026-01-02 17:42:21,178 com.project.quizapp.DataManager INFO  Failed question added for user: 22 
+2026-01-02 17:42:21,192 com.project.quizapp.DataManager INFO  User score update for userId: 22 
+2026-01-02 17:42:21,209 com.project.quizapp.DataManager INFO  Quiz history added for user: 22 
+2026-01-02 17:42:21,210 com.project.quizapp.UserMenu INFO  Quiz completed by user: Janani, Score: 157 
+2026-01-02 17:43:47,392 com.project.quizapp.AuthenticationManager INFO  User logged out: Janani 
+2026-01-02 17:43:51,754 com.project.quizapp.AuthenticationManager INFO  User exited authentication 
+2026-01-02 17:43:51,754 com.project.quizapp.MainMenu INFO  User chose to exit application 
+2026-01-02 17:43:51,778 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 17:43:51,780 com.project.quizapp.DBConnection INFO  Database connection closed 
+2026-01-02 17:43:51,780 com.project.quizapp.QuizApplication INFO  Application terminated 
