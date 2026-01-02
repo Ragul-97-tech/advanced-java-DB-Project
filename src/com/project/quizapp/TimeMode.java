@@ -8,7 +8,7 @@ public class TimeMode extends QuizMode {
     QuizApplication quizApp;
 
     public TimeMode(int timePerQuestion) {
-        super("Time Mode", "Answer the questions within time limit");
+        super(QuizGameModes.Time_Mode, "Answer the questions within time limit");
         this.timePerQuestion = timePerQuestion;
         this.quizApp = new QuizApplication();
     }

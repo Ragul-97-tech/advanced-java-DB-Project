@@ -26,11 +26,11 @@ public class MainMenu {
             if (currentUser == null) continue;
             ColorCode.clearScreen();
             if (currentUser.canAccessAdminFeature()) {
-                logger.info("Admin panel accessed by: " + currentUser.getUserName());
+                logger.info("Admin panel accessed by: " + currentUser.getUserId());
                 new AdminPanel(metaData, auth).showMenu();
             }
             else {
-                logger.info("User menu accessed by: " + currentUser.getUserName());
+                logger.info("User menu accessed by: " + currentUser.getUserId());
                 new UserMenu(metaData, auth).show();
             }
 

@@ -62,9 +62,6 @@ public abstract class User {
     }
 
     public abstract boolean canAccessAdminFeature();
-    public abstract boolean canSaveProgress();
 
-    public String toFileFormat() {
-        return userId + "|" + userName + "|" + password + "|" + role + "|" + totalScore + "|" + quizzesTaken;
-    }
+    public abstract boolean canSaveProgress();
 }

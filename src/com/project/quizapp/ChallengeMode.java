@@ -7,7 +7,7 @@ public class ChallengeMode extends QuizMode {
     private static final int STREAK_BONUS = 5;
 
     public ChallengeMode() {
-        super("Challenge Mode", "Earn bonus points for answer streaks!");
+        super(QuizGameModes.Challenge_Mode, "Earn bonus points for answer streaks!");
         this.quizApp = new QuizApplication();
     }
 

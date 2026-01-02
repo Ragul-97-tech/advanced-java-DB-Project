@@ -1,9 +1,9 @@
-CAT001|Java Programming|Core Java concepts and OOPs
-CAT002|Biology|Life sciences and human body
-CAT003|English Grammar|Grammar rules and vocabulary
-CAT004|JavaScript|JS concept and client side data side management
-CAT005|Python|Python programming fundamentals
-CAT006|Mathematics|Algebra, geometry, and calculations
-CAT007|History|World history and historical events
-CAT008|Science|Physics, chemistry, and general science
-CAT009|Geography|World geography and locations
+1|Java Programming|Core Java concepts and OOPs
+2|Biology|Life sciences and human body
+3|English Grammar|Grammar rules and vocabulary
+4|JavaScript|JS concept and client side data side management
+5|Python|Python programming fundamentals
+6|Mathematics|Algebra, geometry, and calculations
+7|History|World history and historical events
+8|Science|Physics, chemistry, and general science
+9|Geography|World geography and locations

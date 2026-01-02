@@ -9,7 +9,7 @@ public class MarathonMode extends QuizMode {
     private static final int ENERGY_GAIN_CORRECT = 5;
 
     public MarathonMode() {
-        super("Marathon Mode", "Answer as many as you can before energy runs out!");
+        super(QuizGameModes.Marathon_Mode, "Answer as many as you can before energy runs out!");
         this.quizApp = new QuizApplication();
     }
 

@@ -6,7 +6,7 @@ public class StandardMode extends QuizMode {
     private QuizApplication quizApp;
 
     public StandardMode() {
-        super("Standard Mode", "Answer all questions at own pace");
+        super(QuizGameModes.Standard_Mode, "Answer all questions at own pace");
         this.quizApp = new QuizApplication();
     }
 

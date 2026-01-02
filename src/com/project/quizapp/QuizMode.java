@@ -5,16 +5,16 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class QuizMode {
     protected static final Logger logger = LogManager.getLogger(QuizMode.class);
-    protected String modeName;
+    protected QuizGameModes modeName;
     protected String description;
 
-    public QuizMode(String modeName, String description) {
+    public QuizMode(QuizGameModes modeName, String description) {
         this.modeName = modeName;
         this.description = description;
     }
 
     public String getModeName() {
-        return modeName;
+        return modeName.name();
     }
     public String getDescription() {
         return description;

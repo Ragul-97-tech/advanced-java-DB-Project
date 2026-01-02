@@ -7,7 +7,7 @@ public class SurvivalMode extends QuizMode {
     private QuizApplication quizApp;
 
     public SurvivalMode(int maxLives) {
-        super("Survival Mode", "Answer until you lose all lives");
+        super(QuizGameModes.Survival_Mode, "Answer until you lose all lives");
         this.maxLives = maxLives;
         this.quizApp = new QuizApplication();
     }

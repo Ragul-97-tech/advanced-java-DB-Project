@@ -2,6 +2,7 @@ package com.project.quizapp;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class DataManager {
         try {
             PreparedStatement stmt = connection.prepareStatement(DBQueries.INSERT_USER);
             stmt.setString(1, "Ragul");
-            stmt.setString(2, "Ragul@123");
+            stmt.setString(2, BCrypt.hashpw("Ragul@123", BCrypt.gensalt(10)));
             stmt.setString(3, "ADMIN");
             stmt.executeUpdate();
             logger.info("Default admin user created");
@@ -90,7 +91,7 @@ public class DataManager {
 
     public User findUserByUsername(String username) {
        try {
-           PreparedStatement stmt = connection.prepareStatement(DBQueries.GET_USER_BY_NAME);
+           PreparedStatement stmt = connection.prepareStatement(DBQueries.GET_USER_BY_USERNAME);
            stmt.setString(1, username);
            ResultSet rs = stmt.executeQuery();
            if (rs.next())
@@ -137,20 +138,22 @@ public class DataManager {
         try {
             PreparedStatement stmt = connection.prepareStatement(DBQueries.INSERT_USER, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, user.getUserName());
-            stmt.setString(1, user.getPassword());
-            stmt.setString(1, user.getRole());
+            String crypt = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(10));
+            stmt.setString(2, crypt);
+            stmt.setString(3, user.getRole());
 
             int affected = stmt.executeUpdate();
+
             if (affected > 0) {
                 ResultSet keys = stmt.getGeneratedKeys();
                 if (keys.next()) {
                     user.setUserId(String.valueOf(keys.getInt(1)));
                 }
-                logger.info("User added: " + user.getUserName());
+                logger.info("User added: " + user.getUserId());
                 return true;
             }
         } catch (SQLException e) {
-            logger.error("Error on adding user: " + user.getUserName());
+            logger.error("Error on adding user: " + user.getUserId(), e);
         }
         return false;
     }
@@ -211,7 +214,7 @@ public class DataManager {
 
     public Category findCategoryByName(String name) {
         try {
-            PreparedStatement stmt = connection.prepareStatement(DBQueries.GET_USER_BY_NAME);
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.GET_USER_BY_USERNAME);
             stmt.setString(1, name);
             ResultSet rs = stmt.executeQuery();
             if (rs.next())
@@ -342,6 +345,22 @@ public class DataManager {
         return null;
     }
 
+    public Question getQuestionByIdInCategory(int questionId, int categoryId) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.GET_QUESTION_BY_ID_CATEGORY);
+            stmt.setInt(1, categoryId);
+            stmt.setInt(2, questionId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return createQuestionFromResultSet(rs);
+            }
+        } catch (SQLException e) {
+            logger.error("Error on getting question by ID",e);
+        }
+        return null;
+    }
+
     private Question createQuestionFromResultSet(ResultSet rs) throws SQLException {
         int questionId = rs.getInt("questionId");
         String questionText = rs.getString("questionText");
@@ -397,7 +416,7 @@ public class DataManager {
 
     public int addQuestion(int categoryId, String questionText, String difficulty, int points, String[] options, int correctOption) {
         try {
-            PreparedStatement stmt = connection.prepareStatement(DBQueries.INSERT_QUESTION);
+            PreparedStatement stmt = connection.prepareStatement(DBQueries.INSERT_QUESTION, Statement.RETURN_GENERATED_KEYS);
             stmt.setInt(1, categoryId);
             stmt.setString(2, questionText);
             stmt.setString(3, difficulty);

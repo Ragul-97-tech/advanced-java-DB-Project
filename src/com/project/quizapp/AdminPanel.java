@@ -50,10 +50,10 @@ public class AdminPanel {
         int choice;
         while (true) {
             System.out.println(ColorCode.colored("cyan", ColorCode.boxDouble("           Manage Questions           ")));
-            System.out.println(ColorCode.colored("YELLOW", " 1.") + " \uD83D\uDC41\uFE0F  View All Questions");
+            System.out.println(ColorCode.colored("YELLOW", " 1.") + " \uD83D\uDC41\uFE0F View All Questions");
             System.out.println(ColorCode.colored("YELLOW", " 2.") + " ➕ Add New Question");
-            System.out.println(ColorCode.colored("YELLOW", " 3.") + " ✏\uFE0F  Edit Question");
-            System.out.println(ColorCode.colored("YELLOW", " 4.") + " \uD83D\uDDD1\uFE0F  Delete Question");
+            System.out.println(ColorCode.colored("YELLOW", " 3.") + " ✏\uFE0F Edit Question");
+            System.out.println(ColorCode.colored("YELLOW", " 4.") + " \uD83D\uDDD1\uFE0F Delete Question");
             System.out.println(ColorCode.colored("YELLOW", " 5.") + " \uD83D\uDD00 Move Question to Another Category");
             System.out.println(ColorCode.colored("RED", " 0.") + " \uD83D\uDD19 Back to Admin Menu");
 
@@ -166,12 +166,28 @@ public class AdminPanel {
 
     void editQuestion() {
         System.out.println("\n" + ColorCode.colored("blue", ColorCode.boxDouble("    Edit Question    ")));
+
+        ArrayList<Category> categories = metaData.getCategories();
+        System.out.println(ColorCode.header("blue", "\uD83D\uDCDA Available Categories:"));
+        for (int i = 0; i < categories.size(); i++) {
+            System.out.println(ColorCode.colored("yellow", (i+1) + ". " + categories.get(i).getCategoryName()));
+        }
+        System.out.println(ColorCode.colored("red", "0. Cancel"));
+        int catChoice = quizApp.getIntInRange("\nSelect category (0-" + categories.size() + "): ", 0, categories.size());
+        if (catChoice == 0) return;
+
+        ArrayList<Question> questions = metaData.getQuestionsByCategory(catChoice);
+
+        for (Question q : questions) {
+            System.out.println(ColorCode.colored("cyan", q.getQuestionId() + ": "+ q.getQuestionText()+ ColorCode.RESET));
+        }
+
         String questId = quizApp.getString(ColorCode.colored("cyan", "\n\uD83D\uDD0D Enter Question ID or 0 to exit: "));
         if (questId.trim().equals("0")) return;
 
         try {
             int questionId = Integer.parseInt(questId);
-            Question foundQuest = metaData.getQuestionById(questionId);
+            Question foundQuest = metaData.getQuestionByIdInCategory(questionId, catChoice);
 
             if (foundQuest == null) {
                 System.out.println(ColorCode.warning("Question not found!"));
@@ -192,7 +208,6 @@ public class AdminPanel {
 
                 int chosenOption = quizApp.getIntInRange("\n➤ Which option to edit (1-" + foundQuest.getOptions().length + "): ", 1, foundQuest.getOptions().length) - 1;
                 String newOption = quizApp.getString("Enter new option instead of this " + foundQuest.getOptions()[chosenOption] + ": ");
-//                newOption.trim().isEmpty() ? metaData.;
 
                 if (quizApp.getYesNo(ColorCode.colored("magenta", "Are you wants to change the correct option? (y/n): "))) {
                     int correctOption = quizApp.getIntInRange("Enter correct option number (1-" + foundQuest.getOptions().length + ") or 0 to exit: ", 1, foundQuest.getOptions().length) - 1;
@@ -243,12 +258,27 @@ public class AdminPanel {
     public void deleteQuestion() {
         System.out.println(ColorCode.colored("blue", ColorCode.boxDouble("       🗑️  DELETE QUESTION 🗑️        ")));
 
+        ArrayList<Category> categories = metaData.getCategories();
+        System.out.println(ColorCode.header("blue", "\uD83D\uDCDA Available Categories:"));
+        for (int i = 0; i < categories.size(); i++) {
+            System.out.println(ColorCode.colored("yellow", (i+1) + ". " + categories.get(i).getCategoryName()));
+        }
+        System.out.println(ColorCode.colored("red", "0. Cancel"));
+        int catChoice = quizApp.getIntInRange("\nSelect category (0-" + categories.size() + "): ", 0, categories.size());
+        if (catChoice == 0) return;
+
+        ArrayList<Question> questions = metaData.getQuestionsByCategory(catChoice);
+
+        for (Question q : questions) {
+            System.out.println(ColorCode.colored("cyan", q.getQuestionId() + ": "+ q.getQuestionText()+ ColorCode.RESET));
+        }
+
         String questId = quizApp.getString(ColorCode.colored("cyan", "\n\uD83D\uDD0D Enter Question ID or 0 to exit: "));
         if (questId.trim().equals("0")) return;
 
        try {
            int questionId = Integer.parseInt(questId);
-           Question q = metaData.getQuestionById(questionId);
+           Question q = metaData.getQuestionByIdInCategory(questionId, catChoice);
            if (q != null) {
                System.out.println(ColorCode.colored("yellow", "Found: " + q.getQuestionText()));
 
@@ -371,10 +401,10 @@ public class AdminPanel {
         int choice;
         while (true) {
             System.out.println("\n" + ColorCode.colored("cyan", ColorCode.boxDouble("       📚 MANAGE CATEGORIES 📚       ")));
-            System.out.println(ColorCode.colored("YELLOW", " 1.") + " \uD83D\uDC41\uFE0F  View All Categories");
+            System.out.println(ColorCode.colored("YELLOW", " 1.") + " \uD83D\uDC41\uFE0F View All Categories");
             System.out.println(ColorCode.colored("YELLOW", " 2.") + " ➕ Add New Question");
-            System.out.println(ColorCode.colored("YELLOW", " 3.") + " ✏\uFE0F  Edit Category");
-            System.out.println(ColorCode.colored("YELLOW", " 4.") + " \uD83D\uDDD1\uFE0F  Delete Category");
+            System.out.println(ColorCode.colored("YELLOW", " 3.") + " ✏\uFE0F Edit Category");
+            System.out.println(ColorCode.colored("YELLOW", " 4.") + " \uD83D\uDDD1\uFE0F Delete Category");
             System.out.println(ColorCode.colored("RED", " 0.") + " \uD83D\uDD19 Back to Admin Menu");
 
             choice = quizApp.getIntInRange(ColorCode.colored("white", "\n➤ Enter choice (0-4): "), 0, 4);

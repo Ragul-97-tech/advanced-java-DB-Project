@@ -2,12 +2,15 @@ package com.project.quizapp;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.mindrot.jbcrypt.BCrypt;
+import org.openqa.selenium.remote.JsonToWebElementConverter;
 
 public class AuthenticationManager {
     private static final Logger logger = LogManager.getLogger(AuthenticationManager.class);
     DataManager metaData;
     User currentUser;
     QuizApplication quizApp;
+    BCrypt crypt = new BCrypt();
 
     public AuthenticationManager(DataManager dataManager) {
         this.metaData = dataManager;
@@ -50,13 +53,13 @@ public class AuthenticationManager {
 
                 if (login(password, u)) {
                     System.out.println(ColorCode.right("Login Successfully! welcome, " + username));
-                    logger.info("User logged in: " + username);
+                    logger.info("User logged in: " + u.getUserId());
                     return true;
                 }
                 else {
                     System.out.println(ColorCode.error("Invalid credentials!"));
                     logger.warn("Failed login attempt for username: " + username);
-                    return false;
+                    return authMenu();
                 }
 
             case 2:
@@ -71,7 +74,7 @@ public class AuthenticationManager {
                 if (username.length() < 3) {
                     System.out.println(ColorCode.error("Username must be at least 3 characters!"));
                     logger.warn("Registration failed: username too short");
-                    return false;
+                    return authMenu();
                 }
 
                 if (register(username)) {
@@ -79,20 +82,20 @@ public class AuthenticationManager {
                     if (password.length() < 4) {
                         System.out.println(ColorCode.error("Password must be at least 4 characters!"));
                         logger.warn("Registration failed: password too short");
-                        return false;
+                        return authMenu();
                     }
                     RegisteredUser newUser = new RegisteredUser("", username, password);
                     if (metaData.addUser(newUser)) {
                         currentUser = newUser;
                         System.out.println(ColorCode.right("Registration successfully! Welcome, " + username));
-                        logger.info("New user registered: " + username);
+                        logger.info("New user registered: " + currentUser.getUserId());
                         return true;
                     }
                 }
                 else {
                     System.out.println(ColorCode.error("Username already exist!"));
                     logger.warn("Registration failed: username already exists - " + username);
-                    return false;
+                    return authMenu();
                 }
 
             case 3:
@@ -114,7 +117,7 @@ public class AuthenticationManager {
     }
 
     boolean login(String password, User user) {
-        if (user != null && user.getPassword().equals(password)) {
+        if (user != null && BCrypt.checkpw(password, user.getPassword())) {
             currentUser = user;
             return true;
         }

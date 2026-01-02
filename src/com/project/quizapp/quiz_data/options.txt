@@ -1,0 +1,602 @@
+1|1|Abstraction|0
+2|1|Polymorphism|1
+3|1|Inheritance|0
+4|1|Composition|0
+5|2|create|0
+6|2|alloc|0
+7|2|new|1
+8|2|make|0
+9|3|base|0
+10|3|super|1
+11|3|parent|0
+12|3|this|0
+13|4|Creating a new class using properties of an existing class|1
+14|4|Copying code from one class to another|0
+15|4|Combining multiple classes|0
+16|4|Using methods from another package|0
+17|5|Abstraction|0
+18|5|Inheritance|1
+19|5|Polymorphism|0
+20|5|Composition|0
+21|6|Same method name with different parameters|1
+22|6|Same method name and parameters|0
+23|6|Different methods in subclasses|0
+24|6|Overriding superclass methods|0
+25|7|Abstraction|1
+26|7|Polymorphism|0
+27|7|Inheritance|0
+28|7|Composition|0
+29|8|Abstract class|1
+30|8|Concrete class|0
+31|8|Subclass|0
+32|8|Final class|0
+33|9|Inheritance|0
+34|9|Overloading|0
+35|9|Polymorphism|1
+36|9|Composition|0
+37|10|delete()|0
+38|10|finalize()|1
+39|10|destroy()|0
+40|10|remove()|0
+41|11|Abstract classes can have constructors, interfaces cannot|1
+42|11|Interfaces can have instance variables|0
+43|11|Interfaces can extend classes|0
+44|11|Interfaces cannot be inherited|0
+45|12|Improves runtime speed|0
+46|12|Hides implementation details and shows essential features|1
+47|12|Prevents inheritance|0
+48|12|Encourages composition|0
+49|13|Method Overloading|0
+50|13|Method Overriding|1
+51|13|Constructor Chaining|0
+52|13|Static Binding|0
+53|14|Static methods|1
+54|14|Instance methods|0
+55|14|Abstract methods|0
+56|14|Final methods|0
+57|15|Method Overloading|0
+58|15|Method Overriding|1
+59|15|Inheritance|0
+60|15|Abstraction|0
+61|16|They must have all abstract methods|0
+62|16|They can contain both abstract and concrete methods|1
+63|16|They cannot extend another class|0
+64|16|They cannot be inherited|0
+65|17|Overloading|0
+66|17|Method Overriding|1
+67|17|Constructor chaining|0
+68|17|Static binding|0
+69|18|A function|0
+70|18|An instance of a class|1
+71|18|A data type|0
+72|18|A file in memory|0
+73|19|Abstraction|1
+74|19|Inheritance|0
+75|19|Polymorphism|0
+76|19|Aggregation|0
+77|20|static|0
+78|20|final|1
+79|20|const|0
+80|20|super|0
+81|21|Main|0
+82|21|Object|1
+83|21|System|0
+84|21|Base|0
+85|22|Inheritance|1
+86|22|Abstraction|0
+87|22|Aggregation|0
+88|22|Polymorphism|0
+89|23|for|0
+90|23|while|0
+91|23|do-while|1
+92|23|foreach|0
+93|24|Must have same name and parameters|1
+94|24|Can have different parameters|0
+95|24|Must be static|0
+96|24|None|0
+97|25|Polymorphism|0
+98|25|Abstraction|1
+99|25|Inheritance|0
+100|25|Composition|0
+101|26|int sum;|1
+102|26|int s = 90;|0
+103|26|let n;|0
+104|26|var = 60;|0
+105|27|Nucleus|0
+106|27|Ribosome|0
+107|27|Mitochondria|1
+108|27|Cell Wall|0
+109|28|Mitochondria|0
+110|28|Nucleus|1
+111|28|Ribosome|0
+112|28|Cytoplasm|0
+113|29|Liver|0
+114|29|Stomach|0
+115|29|Kidneys|1
+116|29|Heart|0
+117|30|Oxygen|0
+118|30|Nitrogen|0
+119|30|Carbon Dioxide|1
+120|30|Hydrogen|0
+121|31|Liver|0
+122|31|Pancreas|1
+123|31|Gallbladder|0
+124|31|Kidney|0
+125|32|Tissue|0
+126|32|Organ|0
+127|32|Cell|1
+128|32|Organism|0
+129|33|Carotene|0
+130|33|Chlorophyll|1
+131|33|Xanthophyll|0
+132|33|Anthocyanin|0
+133|34|Lungs|0
+134|34|Brain|0
+135|34|Heart|1
+136|34|Liver|0
+137|35|Amino acid|0
+138|35|Fatty acid|0
+139|35|Nucleic acid|1
+140|35|Ascorbic acid|0
+141|36|Brain|0
+142|36|Heart|0
+143|36|Skin|1
+144|36|Lungs|0
+145|37|Cell membrane|1
+146|37|Cytoplasm|0
+147|37|Cell wall|0
+148|37|Golgi apparatus|0
+149|38|Red Blood Cells|0
+150|38|White Blood Cells|0
+151|38|Platelets|1
+152|38|Plasma|0
+153|39|Protein synthesis|1
+154|39|Energy production|0
+155|39|Storage|0
+156|39|Transport|0
+157|40|Cerebrum|0
+158|40|Cerebellum|1
+159|40|Medulla|0
+160|40|Hypothalamus|0
+161|41|Kidneys|0
+162|41|Liver|1
+163|41|Lungs|0
+164|41|Pancreas|0
+165|42|Respiration|0
+166|42|Photosynthesis|1
+167|42|Transpiration|0
+168|42|Germination|0
+169|43|Oxygen|0
+170|43|Carbon Dioxide|1
+171|43|Nitrogen|0
+172|43|Hydrogen|0
+173|44|Respiratory system|0
+174|44|Circulatory system|1
+175|44|Digestive system|0
+176|44|Nervous system|0
+177|45|Absorbs water|1
+178|45|Produces bile|0
+179|45|Stores food|0
+180|45|Breaks down protein|0
+181|46|Heart|0
+182|46|Liver|0
+183|46|Kidneys|1
+184|46|Lungs|0
+185|47|Mitosis|1
+186|47|Meiosis|0
+187|47|Fertilization|0
+188|47|Binary fission|0
+189|48|Mitochondria|0
+190|48|Nucleus|1
+191|48|Chloroplast|0
+192|48|Golgi apparatus|0
+193|49|Mitosis|0
+194|49|Meiosis|1
+195|49|Fission|0
+196|49|Spore formation|0
+197|50|Store starch|0
+198|50|Perform photosynthesis|1
+199|50|Regulate temperature|0
+200|50|Transport nutrients|0
+201|51|RNA|0
+202|51|DNA|1
+203|51|Protein|0
+204|51|Lipid|0
+205|52|Beautiful|0
+206|52|Running|0
+207|52|Quickly|1
+208|52|House|0
+209|53|Herd|0
+210|53|Pack|0
+211|53|Pride|1
+212|53|Flock|0
+213|54|The old car|1
+214|54|broke down|0
+215|54|car|0
+216|54|The old|0
+217|55|singed|0
+218|55|sang|1
+219|55|sung|0
+220|55|singing|0
+221|56|Comma|0
+222|56|Semicolon|0
+223|56|Apostrophe|1
+224|56|Colon|0
+225|57|Kind|0
+226|57|Selfish|1
+227|57|Happy|0
+228|57|Polite|0
+229|58|True|1
+230|58|False|0
+231|59|and|0
+232|59|but|0
+233|59|under|1
+234|59|quickly|0
+235|60|childs|0
+236|60|childrens|0
+237|60|children|1
+238|60|child's|0
+239|61|Declarative|0
+240|61|Interrogative|0
+241|61|Exclamatory|1
+242|61|Imperative|0
+243|62|Adjective|0
+244|62|Verb|0
+245|62|Noun|1
+246|62|Adverb|0
+247|63|Cowardly|0
+248|63|Courageous|1
+249|63|Afraid|0
+250|63|Timid|0
+251|64|a|0
+252|64|an|1
+253|64|the|0
+254|64|no article|0
+255|65|She|0
+256|65|wore|0
+257|65|beautiful|1
+258|65|dress|0
+259|66|The boy kicked the ball.|0
+260|66|The ball was kicked by the boy.|1
+261|66|The boy is kicking the ball.|0
+262|66|Kick the ball!|0
+263|67|gooder|0
+264|67|better|1
+265|67|more good|0
+266|67|best|0
+267|68|She goes to school.|0
+268|68|She is going to school.|0
+269|68|She went to school.|0
+270|68|She will go to school.|1
+271|69|mouses|0
+272|69|mices|0
+273|69|mouse|0
+274|69|mice|1
+275|70|and|0
+276|70|but|1
+277|70|because|0
+278|70|so|0
+279|71|Noun phrase|0
+280|71|Adjective phrase|0
+281|71|Prepositional phrase|1
+282|71|Verb phrase|0
+283|72|He are my friend.|0
+284|72|He is my friend.|1
+285|72|He am my friend.|0
+286|72|He be my friend.|0
+287|73|Simile|0
+288|73|Metaphor|1
+289|73|Personification|0
+290|73|Hyperbole|0
+291|74|She don’t like tea.|1
+292|74|She doesn’t like tea.|0
+293|74|They play football.|0
+294|74|I am reading.|0
+295|75|flower|1
+296|75|floor|0
+297|75|floury|0
+298|75|flow|0
+299|76|He let the cat out of the bag.|1
+300|76|He released the bag’s cat.|0
+301|76|He is chasing cats.|0
+302|76|He caught the bag.|0
+303|77|var x = 10;|1
+304|77|int x = 10;|0
+305|77|let x == 10;|0
+306|77|declare x = 10;|0
+307|78|String|0
+308|78|Boolean|0
+309|78|Character|1
+310|78|Undefined|0
+311|79|null|0
+312|79|undefined|0
+313|79|object|1
+314|79|boolean|0
+315|80|console.log()|1
+316|80|print()|0
+317|80|echo()|0
+318|80|log.console()|0
+319|81|Number('10')|0
+320|81|parseInt('123abc')|1
+321|81|parseFloat('3.14')|0
+322|81|Number(true)|0
+323|82|let|0
+324|82|const|1
+325|82|var|0
+326|82|static|0
+327|83|4|0
+328|83|'22'|1
+329|83|NaN|0
+330|83|undefined|0
+331|84|#|0
+332|84|//|1
+333|84|/*|0
+334|84|--|0
+335|85|append()|0
+336|85|push()|1
+337|85|concat()|0
+338|85|add()|0
+339|86|It is function-scoped.|0
+340|86|It is block-scoped.|1
+341|86|It redeclares like var.|0
+342|86|It creates global variables.|0
+343|87|30|1
+344|87|2|0
+345|87|[10, 20]|0
+346|87|undefined|0
+347|88|splice()|0
+348|88|slice()|1
+349|88|split()|0
+350|88|join()|0
+351|89|Array|0
+352|89|Number|1
+353|89|Boolean|0
+354|89|Undefined|0
+355|90|The added element|0
+356|90|The new array|0
+357|90|The new length|1
+358|90|undefined|0
+359|91|let p = new Promise();|0
+360|91|let p = Promise.create();|0
+361|91|let p = new Promise((res, rej) => {});|1
+362|91|let p = new promise()|0
+363|92|map()|0
+364|92|filter()|0
+365|92|slice()|0
+366|92|splice()|1
+367|93|array|0
+368|93|object|1
+369|93|list|0
+370|93|undefined|0
+371|94|x => {x * 2}|0
+372|94|x => x * 2|1
+373|94|(x) -> x * 2|0
+374|94|function(x) => x * 2|0
+375|95|Object.create()|0
+376|95|Object.assign()|1
+377|95|Object.merge()|0
+378|95|Object.copy()|0
+379|96|for|0
+380|96|while|0
+381|96|do...while|1
+382|96|forEach|0
+383|97|5|0
+384|97|10|0
+385|97|Promise {10}|1
+386|97|undefined|0
+387|98|true|1
+388|98|false|0
+389|98|undefined|0
+390|98|error|0
+391|99|NaN|0
+392|99|number|1
+393|99|undefined|0
+394|99|object|0
+395|100|setDelay()|0
+396|100|setTimeout()|1
+397|100|wait()|0
+398|100|sleep()|0
+399|101|window|0
+400|101|undefined|1
+401|101|global|0
+402|101|null|0
+403|102|function|0
+404|102|def|1
+405|102|func|0
+406|102|define|0
+407|103|list = (1, 2, 3)|0
+408|103|list = [1, 2, 3]|1
+409|103|list = {1, 2, 3}|0
+410|103|list = <1, 2, 3>|0
+411|104|//|0
+412|104|/* */|0
+413|104|#|1
+414|104|--|0
+415|105|Returns length of object|1
+416|105|Returns type|0
+417|105|Deletes object|0
+418|105|Copies object|0
+419|106|add()|0
+420|106|append()|1
+421|106|insert()|0
+422|106|extend()|0
+423|107|<class 'array'>|0
+424|107|<class 'list'>|1
+425|107|<class 'tuple'>|0
+426|107|<class 'dict'>|0
+427|108|catch|0
+428|108|except|1
+429|108|error|0
+430|108|handle|0
+431|109|Value equality|1
+432|109|Reference equality|0
+433|109|Type equality|0
+434|109|Memory address|0
+435|110|int|0
+436|110|float|0
+437|110|char|1
+438|110|bool|0
+439|111|Named function|0
+440|111|Anonymous function|1
+441|111|Class method|0
+442|111|Built-in function|0
+443|112|160|0
+444|112|170|0
+445|112|180|1
+446|112|190|0
+447|113|3.14|1
+448|113|2.71|0
+449|113|1.41|0
+450|113|1.73|0
+451|114|10|0
+452|114|11|0
+453|114|12|1
+454|114|13|0
+455|115|25|0
+456|115|40|0
+457|115|50|1
+458|115|75|0
+459|116|90°|0
+460|116|180°|1
+461|116|270°|0
+462|116|360°|0
+463|117|πr|0
+464|117|πr²|1
+465|117|2πr|0
+466|117|πd|0
+467|118|13|0
+468|118|15|0
+469|118|17|1
+470|118|19|0
+471|119|4|0
+472|119|5|1
+473|119|6|0
+474|119|7|0
+475|120|x|0
+476|120|2x|1
+477|120|x²|0
+478|120|2x²|0
+479|121|a + b = c|0
+480|121|a² + b² = c²|1
+481|121|a × b = c|0
+482|121|a/b = c|0
+483|122|1943|0
+484|122|1944|0
+485|122|1945|1
+486|122|1946|0
+487|123|Thomas Jefferson|0
+488|123|George Washington|1
+489|123|Abraham Lincoln|0
+490|123|John Adams|0
+491|124|Greek|0
+492|124|Roman|1
+493|124|Egyptian|0
+494|124|Persian|0
+495|125|1492|1
+496|125|1500|0
+497|125|1520|0
+498|125|1450|0
+499|126|Angela Merkel|0
+500|126|Indira Gandhi|0
+501|126|Margaret Thatcher|1
+502|126|Golda Meir|0
+503|127|Colossus of Rhodes|0
+504|127|Hanging Gardens|0
+505|127|Great Pyramid of Giza|1
+506|127|Lighthouse of Alexandria|0
+507|128|Santa Maria|0
+508|128|Mayflower|1
+509|128|Endeavour|0
+510|128|Victory|0
+511|129|George Washington|0
+512|129|Benjamin Franklin|0
+513|129|Thomas Jefferson|1
+514|129|John Adams|0
+515|130|Roman|0
+516|130|Greek|0
+517|130|Egyptian|0
+518|130|Sumerian|1
+519|131|1987|0
+520|131|1988|0
+521|131|1989|1
+522|131|1990|0
+523|132|O2|0
+524|132|H2O|1
+525|132|CO2|0
+526|132|HO|0
+527|133|Venus|0
+528|133|Jupiter|0
+529|133|Mars|1
+530|133|Saturn|0
+531|134|Magnetism|0
+532|134|Gravity|1
+533|134|Friction|0
+534|134|Pressure|0
+535|135|300,000 km/s|1
+536|135|150,000 km/s|0
+537|135|500,000 km/s|0
+538|135|100,000 km/s|0
+539|136|Go|0
+540|136|Gd|0
+541|136|Au|1
+542|136|Ag|0
+543|137|Heart|0
+544|137|Brain|0
+545|137|Liver|0
+546|137|Skin|1
+547|138|Chemical|0
+548|138|Nuclear|1
+549|138|Electrical|0
+550|138|Mechanical|0
+551|139|Molecule|0
+552|139|Atom|1
+553|139|Electron|0
+554|139|Proton|0
+555|140|5|0
+556|140|6|0
+557|140|7|1
+558|140|8|0
+559|141|F = ma|0
+560|141|Action-Reaction|0
+561|141|Inertia|1
+562|141|Energy Conservation|0
+563|142|London|0
+564|142|Berlin|0
+565|142|Paris|1
+566|142|Rome|0
+567|143|Atlantic|0
+568|143|Indian|0
+569|143|Arctic|0
+570|143|Pacific|1
+571|144|5|0
+572|144|6|0
+573|144|7|1
+574|144|8|0
+575|145|Amazon|0
+576|145|Nile|1
+577|145|Yangtze|0
+578|145|Mississippi|0
+579|146|India|0
+580|146|USA|0
+581|146|China|1
+582|146|Indonesia|0
+583|147|K2|0
+584|147|Everest|1
+585|147|Kilimanjaro|0
+586|147|Denali|0
+587|148|Sahara|1
+588|148|Arabian|0
+589|148|Gobi|0
+590|148|Kalahari|0
+591|149|Monaco|0
+592|149|Vatican City|1
+593|149|San Marino|0
+594|149|Liechtenstein|0
+595|150|Prime Meridian|0
+596|150|Tropic of Cancer|0
+597|150|Equator|1
+598|150|Arctic Circle|0
+599|151|Sydney|0
+600|151|Melbourne|0
+601|151|Canberra|1
+602|151|Brisbane|0
