@@ -7,9 +7,9 @@ import java.util.ArrayList;
 
 public class AdminPanel {
     private static final Logger logger = LogManager.getLogger(AdminPanel.class);
-    private DataManager metaData;
-    private AuthenticationManager auth;
-    private QuizApplication quizApp;
+    private final DataManager metaData;
+    private final AuthenticationManager auth;
+    private final QuizApplication quizApp;
 
     public AdminPanel(DataManager metaData, AuthenticationManager auth) {
         this.metaData = metaData;
@@ -23,7 +23,7 @@ public class AdminPanel {
         int choice;
         while (true) {
             System.out.println();
-            System.out.println(ColorCode.colored("cyan",ColorCode.boxDouble("              👑 ADMIN:"  + admin.getUserName() + "              ")));
+            System.out.println(ColorCode.colored("cyan",ColorCode.boxDouble("              👑 ADMIN: "  + admin.getUserName() + "              ")));
 
             System.out.println(ColorCode.colored("YELLOW", " 1.") + " \uD83D\uDCDD Manage Questions");
             System.out.println(ColorCode.colored("YELLOW", " 2.") + " \uD83D\uDCDA Manage Categories");

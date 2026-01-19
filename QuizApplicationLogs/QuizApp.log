@@ -162,3 +162,35 @@ java.lang.IllegalArgumentException: Invalid salt version
 2026-01-02 17:43:51,778 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
 2026-01-02 17:43:51,780 com.project.quizapp.DBConnection INFO  Database connection closed 
 2026-01-02 17:43:51,780 com.project.quizapp.QuizApplication INFO  Application terminated 
+2026-01-02 18:14:40,901 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 18:14:40,902 com.project.quizapp.DataManager INFO  Initializing application data 
+2026-01-02 18:14:40,926 com.project.quizapp.DataManager INFO  Data initialization completed 
+2026-01-02 18:14:40,926 com.project.quizapp.QuizApplication INFO  Data manager initialized successfully 
+2026-01-02 18:14:40,928 com.project.quizapp.MainMenu INFO  Main menu started    
+2026-01-02 18:14:52,013 com.project.quizapp.AuthenticationManager INFO  User logged in: 20   
+2026-01-02 18:14:52,013 com.project.quizapp.MainMenu INFO  Admin panel accessed by: 20 
+2026-01-02 18:17:21,119 com.project.quizapp.AuthenticationManager INFO  User logged out: Ragul 
+2026-01-02 18:17:21,897 com.project.quizapp.AuthenticationManager INFO  User exited authentication 
+2026-01-02 18:17:21,898 com.project.quizapp.MainMenu INFO  User chose to exit application 
+2026-01-02 18:17:21,926 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-02 18:17:21,928 com.project.quizapp.DBConnection INFO  Database connection closed 
+2026-01-02 18:17:21,928 com.project.quizapp.QuizApplication INFO  Application terminated 
+2026-01-19 14:54:15,300 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-19 14:54:15,301 com.project.quizapp.DataManager INFO  Initializing application data 
+2026-01-19 14:54:15,390 com.project.quizapp.DataManager INFO  Data initialization completed 
+2026-01-19 14:54:15,390 com.project.quizapp.QuizApplication INFO  Data manager initialized successfully 
+2026-01-19 14:54:15,393 com.project.quizapp.MainMenu INFO  Main menu started    
+2026-01-19 14:56:24,419 com.project.quizapp.AuthenticationManager INFO  User logged in: 20   
+2026-01-19 14:56:24,420 com.project.quizapp.MainMenu INFO  Admin panel accessed by: 20 
+2026-01-19 14:56:32,451 com.project.quizapp.AuthenticationManager INFO  User logged out: Ragul 
+2026-01-19 14:56:48,801 com.project.quizapp.DataManager INFO  User added: 23       
+2026-01-19 14:56:48,801 com.project.quizapp.AuthenticationManager INFO  New user registered: 23 
+2026-01-19 14:56:48,801 com.project.quizapp.MainMenu INFO  User menu accessed by: 23 
+2026-01-19 14:57:42,440 com.project.quizapp.UserMenu INFO  Starting quiz: JavaScript Quiz for user: Gokul 
+2026-01-19 14:57:51,078 com.project.quizapp.DataManager INFO  User score update for userId: 23 
+2026-01-19 14:57:51,099 com.project.quizapp.DataManager INFO  Quiz history added for user: 23 
+2026-01-19 14:57:51,101 com.project.quizapp.UserMenu INFO  Quiz completed by user: Gokul, Score: 0 
+2026-01-19 14:57:56,483 com.project.quizapp.UserMenu INFO  Starting quiz: Biology Quiz for user: Gokul 
+2026-01-19 14:58:40,534 com.project.quizapp.DataManager INFO  User score update for userId: 23 
+2026-01-19 14:58:40,547 com.project.quizapp.DataManager INFO  Quiz history added for user: 23 
+2026-01-19 14:58:40,548 com.project.quizapp.UserMenu INFO  Quiz completed by user: Gokul, Score: 5 
