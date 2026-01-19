@@ -58,6 +58,7 @@ public class TimeMode extends QuizMode {
             }
             else {
                 System.out.println(ColorCode.error("Incorrect!"));
+                System.out.println(ColorCode.colored("cyan", "Correct Option: " + q.getOptions()[q.getCorrectOption()]));
                 failed.add(q);
             }
             System.out.println(ColorCode.separator(50));
@@ -72,59 +73,65 @@ public class TimeMode extends QuizMode {
 
     private int getTimedAnswer(int maxOptions, int timeLimit) {
 
-        AtomicBoolean finished = new AtomicBoolean(false);
+        AtomicBoolean timeUp = new AtomicBoolean(false);
         AtomicInteger chosenOption = new AtomicInteger(-1);
-
-        Thread timerThread = new Thread(() -> runProgressBarTimer(finished));
 
         Thread inputThread = new Thread(() -> {
             try {
                 chosenOption.set(
                         quizApp.getIntInRange(
                                 "\n Enter your option (1-" + maxOptions + ", 0 to exit): ",
-                                0,
-                                maxOptions
+                                0, maxOptions
                         )
                 );
-            } catch (Exception e) {
-                System.out.println(ColorCode.error("Invalid input"));
-            }
-            finally {
-                finished.set(true);
-                System.out.println(ColorCode.thinSeparator(50));
+            } catch (Exception ignored) {
             }
         });
 
-        timerThread.start();
+        Thread timerThread = new Thread(() -> {
+            for (int t = timeLimit; t >= 0; t--) {
+                if (chosenOption.get() != -1) return;
+
+                printProgressBar(t, timeLimit);
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    return;
+                }
+            }
+
+            timeUp.set(true);
+            inputThread.interrupt();   
+            clearCurrentLine();
+            System.out.println(ColorCode.colored("Red", "⏰ Time's up!"));
+        });
+
         inputThread.start();
+        timerThread.start();
 
         try {
+            timerThread.interrupt();
             timerThread.join();
-            inputThread.join();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
 
+        if (timeUp.get()) return -1;
         return chosenOption.get();
     }
 
 
-    private void runProgressBarTimer(AtomicBoolean isFinished) {
-        for (int timeLeft = TIME_PER_QUESTION; timeLeft >= 0; timeLeft--) {
 
-            if (isFinished.get()) return;
-
-            int filled = (int) (((TIME_PER_QUESTION - timeLeft) / (double) TIME_PER_QUESTION) * BAR_LENGTH);
-            String bar = "█".repeat(filled) + "░".repeat(BAR_LENGTH - filled);
-
-            System.out.printf("\r⏳ [%s] %ds ", bar, timeLeft);
-            System.out.flush();
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {}
-        }
-        isFinished.set(true);
-        System.out.println("\n⏰ Time's up!");
+    private void printProgressBar(int timeLeft, int total) {
+        int filled = (int) (((total - timeLeft) / (double) total) * BAR_LENGTH);
+        String bar = "█".repeat(filled) + "░".repeat(BAR_LENGTH - filled);
+        System.out.printf("\r⏳ [%s] %ds ", bar, timeLeft);
+        System.out.flush();
     }
+
+    private void clearCurrentLine() {
+        System.out.print("\r" + " ".repeat(80) + "\r");
+    }
+
 }
