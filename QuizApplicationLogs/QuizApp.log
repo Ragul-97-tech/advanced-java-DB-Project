@@ -226,3 +226,11 @@ java.lang.IllegalArgumentException: Invalid salt version
 2026-01-19 15:09:54,615 com.project.quizapp.DataManager INFO  Quiz history added for user: 23 
 2026-01-19 15:09:54,617 com.project.quizapp.UserMenu INFO  Quiz completed by user: Gokul, Score: 5 
 2026-01-19 15:10:14,688 com.project.quizapp.UserMenu INFO  Starting quiz: Java Programming Quiz for user: Gokul 
+2026-01-19 15:26:52,104 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-19 15:26:52,106 com.project.quizapp.DataManager INFO  Initializing application data 
+2026-01-19 15:26:52,133 com.project.quizapp.DataManager INFO  Data initialization completed 
+2026-01-19 15:26:52,133 com.project.quizapp.QuizApplication INFO  Data manager initialized successfully 
+2026-01-19 15:26:52,136 com.project.quizapp.MainMenu INFO  Main menu started    
+2026-01-19 15:27:07,153 com.project.quizapp.AuthenticationManager INFO  User logged in: 23   
+2026-01-19 15:27:07,153 com.project.quizapp.MainMenu INFO  User menu accessed by: 23 
+2026-01-19 15:27:26,927 com.project.quizapp.UserMenu INFO  Starting quiz: Python Quiz for user: Gokul 

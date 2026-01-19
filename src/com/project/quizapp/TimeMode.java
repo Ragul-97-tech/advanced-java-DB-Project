@@ -78,18 +78,18 @@ public class TimeMode extends QuizMode {
 
         Thread inputThread = new Thread(() -> {
             try {
-                chosenOption.set(
-                        quizApp.getIntInRange(
-                                "\n Enter your option (1-" + maxOptions + ", 0 to exit): ",
-                                0, maxOptions
-                        )
+                int val = quizApp.getIntInRange(
+                        "\n Enter your option (1-" + maxOptions + ", 0 to exit): ",
+                        0, maxOptions
                 );
+                chosenOption.set(val);
             } catch (Exception ignored) {
             }
         });
 
         Thread timerThread = new Thread(() -> {
             for (int t = timeLimit; t >= 0; t--) {
+
                 if (chosenOption.get() != -1) return;
 
                 printProgressBar(t, timeLimit);
@@ -102,25 +102,30 @@ public class TimeMode extends QuizMode {
             }
 
             timeUp.set(true);
-            inputThread.interrupt();   
             clearCurrentLine();
-            System.out.println(ColorCode.colored("Red", "⏰ Time's up!"));
         });
 
         inputThread.start();
         timerThread.start();
 
-        try {
-            timerThread.interrupt();
-            timerThread.join();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        while (true) {
+            if (chosenOption.get() != -1) break;
+            if (timeUp.get()) break;
+
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
         }
+
+        inputThread.interrupt();
+        timerThread.interrupt();
 
         if (timeUp.get()) return -1;
         return chosenOption.get();
     }
-
 
 
     private void printProgressBar(int timeLeft, int total) {
@@ -133,5 +138,4 @@ public class TimeMode extends QuizMode {
     private void clearCurrentLine() {
         System.out.print("\r" + " ".repeat(80) + "\r");
     }
-
 }
