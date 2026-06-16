@@ -234,3 +234,57 @@ java.lang.IllegalArgumentException: Invalid salt version
 2026-01-19 15:27:07,153 com.project.quizapp.AuthenticationManager INFO  User logged in: 23   
 2026-01-19 15:27:07,153 com.project.quizapp.MainMenu INFO  User menu accessed by: 23 
 2026-01-19 15:27:26,927 com.project.quizapp.UserMenu INFO  Starting quiz: Python Quiz for user: Gokul 
+2026-01-19 15:37:57,839 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-01-19 15:37:57,841 com.project.quizapp.DataManager INFO  Initializing application data 
+2026-01-19 15:37:57,865 com.project.quizapp.DataManager INFO  Data initialization completed 
+2026-01-19 15:37:57,865 com.project.quizapp.QuizApplication INFO  Data manager initialized successfully 
+2026-01-19 15:37:57,868 com.project.quizapp.MainMenu INFO  Main menu started    
+2026-03-04 17:26:17,556 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-03-04 17:26:17,558 com.project.quizapp.DataManager INFO  Initializing application data 
+2026-03-04 17:26:17,588 com.project.quizapp.DataManager INFO  Data initialization completed 
+2026-03-04 17:26:17,588 com.project.quizapp.QuizApplication INFO  Data manager initialized successfully 
+2026-03-04 17:26:17,590 com.project.quizapp.MainMenu INFO  Main menu started    
+2026-03-04 17:26:27,072 com.project.quizapp.AuthenticationManager WARN  Failed login attempt for username: ragul 
+2026-03-04 17:26:34,948 com.project.quizapp.AuthenticationManager WARN  Registration failed: username already exists - ragul 
+2026-03-04 17:26:42,429 com.project.quizapp.AuthenticationManager WARN  Registration failed: username already exists - ragul 
+2026-03-04 17:27:15,756 com.project.quizapp.DataManager INFO  User added: 24       
+2026-03-04 17:27:15,757 com.project.quizapp.AuthenticationManager INFO  New user registered: 24 
+2026-03-04 17:27:15,757 com.project.quizapp.MainMenu INFO  User menu accessed by: 24 
+2026-03-04 17:27:51,089 com.project.quizapp.UserMenu INFO  Starting quiz: Biology Quiz for user: Ragul_97 
+2026-03-04 17:28:54,197 com.project.quizapp.DataManager INFO  User score update for userId: 24 
+2026-03-04 17:28:54,214 com.project.quizapp.DataManager INFO  Quiz history added for user: 24 
+2026-03-04 17:28:54,217 com.project.quizapp.UserMenu INFO  Quiz completed by user: Ragul_97, Score: 5 
+2026-03-05 09:36:34,842 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-03-05 09:36:34,844 com.project.quizapp.DataManager INFO  Initializing application data 
+2026-03-05 09:36:34,864 com.project.quizapp.DataManager INFO  Data initialization completed 
+2026-03-05 09:36:34,865 com.project.quizapp.QuizApplication INFO  Data manager initialized successfully 
+2026-03-05 09:36:34,867 com.project.quizapp.MainMenu INFO  Main menu started    
+2026-03-05 09:36:54,595 com.project.quizapp.AuthenticationManager WARN  Failed login attempt for username: Ragul_97\ 
+2026-03-05 09:37:04,371 com.project.quizapp.AuthenticationManager WARN  Failed login attempt for username: Ragul_97 
+2026-03-05 09:37:23,614 com.project.quizapp.AuthenticationManager WARN  Failed login attempt for username: lubina 
+2026-03-05 09:37:40,775 com.project.quizapp.AuthenticationManager WARN  Failed login attempt for username: Lubina 
+2026-03-05 09:37:48,228 com.project.quizapp.AuthenticationManager WARN  Registration failed: username already exists - Gokul 
+2026-03-05 09:38:07,028 com.project.quizapp.DataManager INFO  User added: 25       
+2026-03-05 09:38:07,029 com.project.quizapp.AuthenticationManager INFO  New user registered: 25 
+2026-03-05 09:38:07,029 com.project.quizapp.MainMenu INFO  User menu accessed by: 25 
+2026-03-05 09:38:15,156 com.project.quizapp.UserMenu INFO  Starting quiz: Biology Quiz for user: Kowsik 
+2026-03-05 09:38:27,951 com.project.quizapp.QuizApplication WARN  Invalid input received: expected integer 
+2026-03-05 09:38:30,915 com.project.quizapp.QuizApplication WARN  Invalid input received: expected integer 
+2026-03-05 09:38:32,909 com.project.quizapp.QuizApplication WARN  Invalid input received: expected integer 
+2026-03-05 09:38:34,628 com.project.quizapp.DataManager INFO  User score update for userId: 25 
+2026-03-05 09:38:34,647 com.project.quizapp.DataManager INFO  Quiz history added for user: 25 
+2026-03-05 09:38:34,649 com.project.quizapp.UserMenu INFO  Quiz completed by user: Kowsik, Score: 32 
+2026-03-05 09:38:55,513 com.project.quizapp.UserMenu INFO  Starting quiz: Biology Quiz for user: Kowsik 
+2026-03-05 09:39:47,967 com.project.quizapp.DataManager INFO  User score update for userId: 25 
+2026-03-05 09:39:47,981 com.project.quizapp.DataManager INFO  Quiz history added for user: 25 
+2026-03-05 09:39:47,983 com.project.quizapp.UserMenu INFO  Quiz completed by user: Kowsik, Score: 30 
+2026-03-12 01:35:49,965 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-03-12 01:35:49,967 com.project.quizapp.DataManager INFO  Initializing application data 
+2026-03-12 01:35:50,016 com.project.quizapp.DataManager INFO  Data initialization completed 
+2026-03-12 01:35:50,016 com.project.quizapp.QuizApplication INFO  Data manager initialized successfully 
+2026-03-12 01:35:50,020 com.project.quizapp.MainMenu INFO  Main menu started    
+2026-03-12 01:35:55,914 com.project.quizapp.DBConnection INFO  Database connection established successfully! 
+2026-03-12 01:35:55,916 com.project.quizapp.DataManager INFO  Initializing application data 
+2026-03-12 01:35:55,936 com.project.quizapp.DataManager INFO  Data initialization completed 
+2026-03-12 01:35:55,936 com.project.quizapp.QuizApplication INFO  Data manager initialized successfully 
+2026-03-12 01:35:55,939 com.project.quizapp.MainMenu INFO  Main menu started    

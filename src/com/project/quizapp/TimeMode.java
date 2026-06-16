@@ -2,32 +2,28 @@ package com.project.quizapp;
 
 import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.Scanner;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class TimeMode extends QuizMode {
-    private final int TIME_PER_QUESTION;
-    private final int BAR_LENGTH = 25;
+    int timePerQuestion;
     QuizApplication quizApp;
 
     public TimeMode(int timePerQuestion) {
         super(QuizGameModes.Time_Mode, "Answer the questions within time limit");
-        this.TIME_PER_QUESTION = timePerQuestion;
+        this.timePerQuestion = timePerQuestion;
         this.quizApp = new QuizApplication();
     }
-    
+
     public QuizResult executeQuiz(Quiz quiz, User user) {
         quiz.shuffleQuestions();
         ArrayList<Question> questions = quiz.getQuestions();
         int score = 0;
         int totalPoints = 0;
-        for (Question q : questions) 
+        for (Question q : questions)
             totalPoints += q.getPoints();
-        
+
         ArrayList<Question> failed = new ArrayList<>();
         System.out.println(ColorCode.colored("Magenta", ColorCode.boxDouble("  ⏰ Timed Quiz: " + quiz.getQuizTitle() + "  ")));
-        System.out.println(ColorCode.colored("Yellow", "Time per question: " + TIME_PER_QUESTION + " seconds"));
+        System.out.println(ColorCode.colored("Yellow", "Time per question: " + timePerQuestion + " seconds"));
         System.out.println(ColorCode.separator(50));
 
         for (int i = 0; i < questions.size(); i++) {
@@ -40,14 +36,14 @@ public class TimeMode extends QuizMode {
             for (int j = 0; j < options.length; j++) {
                 System.out.println(ColorCode.colored("Cyan", (j+1) + ". " + options[j]));
             }
-            System.out.println(ColorCode.colored("red", "\n⏰ You have " + TIME_PER_QUESTION + " seconds!"));
-            int answer = getTimedAnswer(options.length, TIME_PER_QUESTION);
-            
+            System.out.println(ColorCode.colored("red", "\n⏰ You have " + timePerQuestion + " seconds!"));
+            int answer = getTimedAnswer(options.length, timePerQuestion);
+
             if (answer == 0) {
                 System.out.println("\n"+ColorCode.warning("Quiz exited!"));
                 return new QuizResult(score, totalPoints, questions.size(), failed.size());
             }
-            
+
             if (answer == -1) {
                 System.out.println(ColorCode.colored("Red", "⏰ Time's up!" ));
                 failed.add(q);
@@ -58,7 +54,6 @@ public class TimeMode extends QuizMode {
             }
             else {
                 System.out.println(ColorCode.error("Incorrect!"));
-                System.out.println(ColorCode.colored("cyan", "Correct Option: " + q.getOptions()[q.getCorrectOption()]));
                 failed.add(q);
             }
             System.out.println(ColorCode.separator(50));
@@ -71,71 +66,93 @@ public class TimeMode extends QuizMode {
         return new QuizResult(score, totalPoints, questions.size(), failed.size());
     }
 
-    private int getTimedAnswer(int maxOptions, int timeLimit) {
+    int getTimedAnswer(int maxOptions, int timeLimit) {
+        final int[] answerHolder = { -1 };
+        final boolean[] answered = { false };
+        final Object lock = new Object();
 
-        AtomicBoolean timeUp = new AtomicBoolean(false);
-        AtomicInteger chosenOption = new AtomicInteger(-1);
+        System.out.print(ColorCode.colored("White", "                      Enter your answer (1-" + maxOptions + ", or 0 to quit): "));
+        System.out.flush();
 
         Thread inputThread = new Thread(() -> {
-            try {
-                int val = quizApp.getIntInRange(
-                        "\n Enter your option (1-" + maxOptions + ", 0 to exit): ",
-                        0, maxOptions
-                );
-                chosenOption.set(val);
-            } catch (Exception ignored) {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    synchronized(lock) {
+                        if (answered[0]) break;
+                    }
+
+                    int input = quizApp.getIntInRange("", 0, maxOptions);
+
+                    synchronized(lock) {
+                        if (!answered[0]) {
+                            answerHolder[0] = input;
+                            answered[0] = true;
+                            lock.notifyAll();
+                        }
+                    }
+                    break;
+
+                } catch (InputMismatchException e) {
+                    System.out.print("\r" + ColorCode.colored("Red", "⚠ Invalid input. Enter a number (1-" + maxOptions + "): "));
+                    System.out.flush();
+                } catch (Exception e) {
+                    break;
+                }
             }
         });
 
         Thread timerThread = new Thread(() -> {
-            for (int t = timeLimit; t >= 0; t--) {
-
-                if (chosenOption.get() != -1) return;
-
-                printProgressBar(t, timeLimit);
-
-                try {
+            try {
+                for (int i = timeLimit; i > 0; i--) {
+                    synchronized(lock) {
+                        if (answered[0]) return;
+                    }
+                    System.out.print("\r⏳ Time left: " + i + "s ");
+                    System.out.flush();
                     Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    return;
                 }
-            }
 
-            timeUp.set(true);
-            clearCurrentLine();
+                synchronized(lock) {
+                    if (!answered[0]) {
+                        answered[0] = true;
+                        lock.notifyAll();
+                    }
+                }
+            } catch (InterruptedException e) {
+                // Timer interrupted, exit gracefully
+            }
         });
 
         inputThread.start();
         timerThread.start();
 
-        while (true) {
-            if (chosenOption.get() != -1) break;
-            if (timeUp.get()) break;
-
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
+        // Wait for either answer or timeout
+        synchronized(lock) {
+            while (!answered[0]) {
+                try {
+                    lock.wait(100);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
             }
         }
 
+        // Clean up threads
         inputThread.interrupt();
         timerThread.interrupt();
 
-        if (timeUp.get()) return -1;
-        return chosenOption.get();
-    }
+        try {
+            inputThread.join(500);
+            timerThread.join(500);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
-
-    private void printProgressBar(int timeLeft, int total) {
-        int filled = (int) (((total - timeLeft) / (double) total) * BAR_LENGTH);
-        String bar = "█".repeat(filled) + "░".repeat(BAR_LENGTH - filled);
-        System.out.printf("\r⏳ [%s] %ds ", bar, timeLeft);
+        // Clear the timer line for clean output
+        System.out.print("\r                                                 \r");
         System.out.flush();
-    }
 
-    private void clearCurrentLine() {
-        System.out.print("\r" + " ".repeat(80) + "\r");
+        return answerHolder[0];
     }
 }
